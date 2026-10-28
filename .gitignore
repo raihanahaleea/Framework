@@ -1,0 +1,8 @@
+# Archives
+*.zip
+presensi-asrama.zip
+
+# Node modules & build artifacts (in case someone touches root)
+node_modules/
+dist/
+.DS_Store
