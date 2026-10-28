@@ -1,0 +1,110 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  PENGHUNI
+  FASIL
+  ADMIN
+}
+
+enum StatusPresensi {
+  HADIR
+  TERLAMBAT
+  TIDAK_HADIR
+  IZIN
+}
+
+enum JenisKelamin {
+  L
+  P
+}
+
+enum StatusIzin {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id          Int            @id @default(autoincrement())
+  nama        String
+  nim         String         @unique
+  asal        String
+  nomor_kamar String?
+  jekel       JenisKelamin
+  email       String         @unique
+  password    String
+  role        Role           @default(PENGHUNI)
+  created_at  DateTime       @default(now())
+  updated_at  DateTime       @updatedAt
+
+  presensi    Presensi[]
+  izin        Izin[]         @relation("pengaju")
+  approved    Izin[]         @relation("approver")
+  gedung      Gedung[]
+
+  @@map("users")
+}
+
+model Presensi {
+  id          Int             @id @default(autoincrement())
+  waktu       DateTime
+  lat         Float
+  long        Float
+  status      StatusPresensi
+  foto_wajah  String?
+  keterangan  String?
+  tanggal     DateTime        @db.Date
+  user_id     Int
+  user        User            @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  created_at  DateTime        @default(now())
+
+  @@map("presensi")
+}
+
+model Gedung {
+  id       Int     @id @default(autoincrement())
+  nama     String
+  id_user  Int
+  lat      Float?
+  long     Float?
+  user     User    @relation(fields: [id_user], references: [id], onDelete: Cascade)
+  kamar    Kamar[]
+
+  @@map("gedung")
+}
+
+model Kamar {
+  no_kamar  String  @id
+  lantai    Int
+  id_gedung Int
+  gedung    Gedung  @relation(fields: [id_gedung], references: [id], onDelete: Cascade)
+
+  @@map("kamar")
+}
+
+model Izin {
+  id              Int        @id @default(autoincrement())
+  jenis_izin      String
+  keterangan      String
+  bukti           String?
+  status          StatusIzin @default(PENDING)
+  tanggal_mulai   DateTime   @db.Date
+  tanggal_selesai DateTime   @db.Date
+  user_id         Int
+  user            User       @relation("pengaju", fields: [user_id], references: [id], onDelete: Cascade)
+  approved_by     Int?
+  approver        User?      @relation("approver", fields: [approved_by], references: [id], onDelete: SetNull)
+  created_at      DateTime   @default(now())
+
+  @@map("izin")
+}

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Logs
 logs
 *.log
@@ -22,3 +23,13 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+=======
+# Archives
+*.zip
+presensi-asrama.zip
+
+# Node modules & build artifacts (in case someone touches root)
+node_modules/
+dist/
+.DS_Store
+>>>>>>> 3ae1471c4e9abc7ada9ea2e537d71178262d17b1
