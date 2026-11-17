@@ -1,4 +1,4 @@
-git commit -m "pesan commit Anda"
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
@@ -420,3 +420,7 @@ export default function LoginPage() {
             </a>
           </div>
         </div>
+      </footer>
+    </div>
+  );
+}
