@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register</title>
+  <script defer src="/js/auth.js"></script>
+  <style>
+    body {font-family: Arial, sans-serif; margin: 2rem;}
+    form {max-width: 400px;}
+    label {display: block; margin-top: 1rem;}
+    input {width: 100%; padding: 0.5rem;}
+    button {margin-top: 1rem; padding: 0.5rem 1rem;}
+    .msg {margin-top: 1rem; color: red;}
+  </style>
+</head>
+<body>
+  <h1>Register</h1>
+  <form id="registerForm">
+    <label>Nama
+      <input type="text" name="nama" required />
+    </label>
+    <label>Email
+      <input type="email" name="email" required />
+    </label>
+    <label>Password
+      <input type="password" name="password" required />
+    </label>
+    <label>Role
+      <select name="role" required>
+        <option value="PENGHUNI">Penghuni</option>
+        <option value="PENGURUS">Pengurus</option>
+        <option value="ADMIN">Admin</option>
+      </select>
+    </label>
+    <button type="submit">Register</button>
+    <div class="msg" id="msg"></div>
+  </form>
+  <p>Sudah punya akun? <a href="/login.html">Login di sini</a></p>
+</body>
+</html>
+

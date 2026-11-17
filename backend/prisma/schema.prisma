@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Jekel {
+  LAKI_LAKI
+  PEREMPUAN
+}
+
+enum Role {
+  PENGHUNI
+  PENGURUS
+  ADMIN
+}
+
+enum StatusPresensi {
+  HADIR
+  IZIN
+  SAKIT
+  ALPA
+  TERLAMBAT
+}
+
+model User {
+  id          String     @id @default(uuid())
+  nama        String
+  nim         String     @unique
+  asal        String
+  nomor_kamar String?
+  jekel       Jekel
+  email       String     @unique
+  password    String
+  role        Role       @default(PENGHUNI)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  kamar       Kamar?     @relation(fields: [nomor_kamar], references: [no_kamar])
+  presensi    Presensi[]
+  gedung      Gedung[]
+}
+
+model Gedung {
+  id        String   @id @default(uuid())
+  nama      String
+  id_user   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  pengurus  User?    @relation(fields: [id_user], references: [id])
+  kamar     Kamar[]
+}
+
+model Kamar {
+  no_kamar  String   @id
+  lantai    Int
+  gedung_id String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  gedung    Gedung   @relation(fields: [gedung_id], references: [id])
+  penghuni  User[]
+}
+
+model Presensi {
+  id          String         @id @default(uuid())
+  user_id     String
+  tanggal     DateTime       @db.Date
+  waktu       DateTime       @default(now())
+  lat         Float
+  long        Float
+  jarak_meter Float?
+  status      StatusPresensi
+  foto_wajah  String
+  keterangan  String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  user        User           @relation(fields: [user_id], references: [id])
+}
