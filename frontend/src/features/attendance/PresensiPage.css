@@ -1,0 +1,395 @@
+/* ===========================
+   PRESENSI PAGE
+   QR Code + Dark Theme Panel
+   =========================== */
+
+.presensi-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.presensi-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: 12px;
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.presensi-layout {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 18px;
+  align-items: flex-start;
+}
+
+/* Left Column */
+.presensi-left {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.presensi-date-badge {
+  font-size: 11px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.presensi-intro-text {
+  font-size: 12.5px;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+/* QR Dark Panel */
+.presensi-qr-card {
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.presensi-qr-dark-panel {
+  background: linear-gradient(160deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%);
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.presensi-qr-dark-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 16px 16px;
+  pointer-events: none;
+}
+
+.presensi-qr-session-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 100px;
+  padding: 5px 14px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  z-index: 1;
+}
+
+.presensi-qr-frame {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.presensi-qr-inner {
+  width: 170px;
+  height: 170px;
+  background: #fff;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* QR Corner decorations */
+.qr-corner {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border: 3px solid #10b981;
+}
+
+.qr-corner.tl {
+  top: 0; left: 0;
+  border-right: none; border-bottom: none;
+  border-radius: 4px 0 0 0;
+}
+
+.qr-corner.tr {
+  top: 0; right: 0;
+  border-left: none; border-bottom: none;
+  border-radius: 0 4px 0 0;
+}
+
+.qr-corner.bl {
+  bottom: 0; left: 0;
+  border-right: none; border-top: none;
+  border-radius: 0 0 0 4px;
+}
+
+.qr-corner.br {
+  bottom: 0; right: 0;
+  border-left: none; border-top: none;
+  border-radius: 0 0 4px 0;
+}
+
+.presensi-qr-hint {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  z-index: 1;
+}
+
+.presensi-qr-location {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 11.5px;
+  font-family: monospace;
+  color: rgba(255, 255, 255, 0.65);
+  z-index: 1;
+}
+
+.presensi-accuracy {
+  color: #10b981;
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+/* Right Column */
+.presensi-right {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Clock Card */
+.presensi-clock-card {
+  background: linear-gradient(135deg, #065f46, #047857);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  color: #fff;
+}
+
+.presensi-clock-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: rgba(209, 250, 229, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+
+.presensi-clock-time {
+  font-size: 36px;
+  font-weight: 800;
+  font-family: monospace;
+  letter-spacing: 0.02em;
+  color: #fff;
+}
+
+/* User Card */
+.presensi-user-card .card-body {
+  padding: 14px 16px;
+}
+
+.presensi-user-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.presensi-user-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: #ecfdf5;
+  color: #047857;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.presensi-user-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.presensi-user-nim {
+  font-size: 11px;
+  color: #6b7280;
+  font-family: monospace;
+  margin-top: 2px;
+}
+
+.presensi-user-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.presensi-user-info-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: #6b7280;
+  background: #f9fafb;
+  border: 1px solid #f3f4f6;
+  border-radius: 6px;
+  padding: 6px 10px;
+}
+
+/* Session Items */
+.presensi-session-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+}
+
+.presensi-session-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.presensi-session-name {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.presensi-session-time {
+  font-size: 10.5px;
+  color: #9ca3af;
+  font-family: monospace;
+}
+
+.presensi-session-divider {
+  height: 1px;
+  background: #f3f4f6;
+  margin: 8px 0;
+}
+
+/* Connection Status */
+.presensi-connection {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #6b7280;
+  justify-content: center;
+}
+
+.presensi-conn-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #d1d5db;
+  margin: 0 4px;
+}
+
+/* Action */
+.presensi-action {
+  margin-top: 4px;
+}
+
+.presensi-submit-btn {
+  width: 100%;
+  justify-content: center;
+  padding: 12px 20px;
+  font-size: 14px;
+}
+
+.presensi-done-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.presensi-done-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #065f46;
+}
+
+.presensi-done-sub {
+  font-size: 11px;
+  color: #047857;
+  margin-top: 2px;
+}
+
+/* Refresh button */
+.presensi-refresh-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: none;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.15s;
+  width: 100%;
+}
+
+.presensi-refresh-btn:hover {
+  background: #f9fafb;
+  color: #047857;
+  border-color: #a7f3d0;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .presensi-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .presensi-qr-dark-panel {
+    padding: 24px 16px;
+  }
+
+  .presensi-qr-frame {
+    width: 170px;
+    height: 170px;
+  }
+
+  .presensi-qr-inner {
+    width: 140px;
+    height: 140px;
+  }
+
+  .presensi-clock-time {
+    font-size: 28px;
+  }
+}
