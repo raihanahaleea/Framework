@@ -1,3 +1,16 @@
-# Ignore backend folder
+# Ignore backend
 backend/
+backend-presensi-asrama/
+frontend-presensi-asrama/
 
+# Dependencies
+node_modules/
+frontend/node_modules/
+
+# Build output
+dist/
+build/
+
+# Environment
+.env
+.env.local
