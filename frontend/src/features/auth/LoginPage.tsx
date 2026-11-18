@@ -1,6 +1,6 @@
 
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { getRolePath } from '../../lib/auth';
 import './LoginPage.css';
@@ -30,18 +30,37 @@ type RoleTab = 'PENGHUNI' | 'FASIL' | 'ADMIN';
 export default function LoginPage() {
   const { login, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
-  const [identifier, setIdentifier] = useState('');
-  const [password, setPassword] = useState('');
+  const [identifier, setIdentifier] = useState('penghuni@unand.ac.id');
+  const [password, setPassword] = useState('123456');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
   const [activeRole, setActiveRole] = useState<RoleTab>('PENGHUNI');
 
+  const handleRoleSelect = (role: RoleTab) => {
+    setActiveRole(role);
+    if (role === 'PENGHUNI') {
+      setIdentifier('penghuni@unand.ac.id');
+      setPassword('123456');
+    } else if (role === 'FASIL') {
+      setIdentifier('fasil@unand.ac.id');
+      setPassword('123456');
+    } else if (role === 'ADMIN') {
+      setIdentifier('admin@unand.ac.id');
+      setPassword('123456');
+    }
+  };
+
   // If already authenticated, redirect
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      navigate(getRolePath(user.role) + '/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, user, navigate]);
+
   if (isAuthenticated && user) {
-    navigate(getRolePath(user.role) + '/dashboard', { replace: true });
-    return null;
+    return <Navigate to={getRolePath(user.role) + '/dashboard'} replace />;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -266,7 +285,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     className={`role-tab ${activeRole === 'PENGHUNI' ? 'active' : ''}`}
-                    onClick={() => setActiveRole('PENGHUNI')}
+                    onClick={() => handleRoleSelect('PENGHUNI')}
                   >
                     Penghuni
                   </button>
@@ -274,7 +293,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     className={`role-tab ${activeRole === 'FASIL' ? 'active' : ''}`}
-                    onClick={() => setActiveRole('FASIL')}
+                    onClick={() => handleRoleSelect('FASIL')}
                   >
                     Fasilitator
                   </button>
@@ -282,7 +301,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     className={`role-tab ${activeRole === 'ADMIN' ? 'active' : ''}`}
-                    onClick={() => setActiveRole('ADMIN')}
+                    onClick={() => handleRoleSelect('ADMIN')}
                   >
                     Admin
                   </button>

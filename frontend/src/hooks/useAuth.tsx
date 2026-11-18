@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import type { User, LoginRequest, LoginResponse } from '../types';
 import api from '../lib/api';
-import { setTokens, clearTokens, getAccessToken, getStoredUser, setStoredUser } from '../lib/auth';
+import { setTokens, clearTokens, getAccessToken, getStoredUser, setStoredUser, normalizeUser } from '../lib/auth';
 
 interface AuthContextType {
   user: User | null;
@@ -28,8 +28,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
       const res = await api.get('/auth/me');
-      setUser(res.data);
-      setStoredUser(res.data);
+      const normalized = normalizeUser(res.data);
+      setUser(normalized);
+      setStoredUser(normalized);
     } catch {
       setUser(null);
       clearTokens();
@@ -56,9 +57,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const userData = payload?.user;
 
     if (accessToken && userData) {
+      const normalizedUser = normalizeUser(userData);
       setTokens(accessToken, refreshToken);
-      setUser(userData);
-      setStoredUser(userData);
+      setUser(normalizedUser);
+      setStoredUser(normalizedUser);
     }
     return { ...payload, accessToken, refreshToken, user: userData };
   }, []);

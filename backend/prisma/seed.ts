@@ -74,6 +74,16 @@ async function main() {
       nomor_kamar: null,
     },
     {
+      nama: 'Mahasiswa Asrama',
+      email: '2311522040@student.unand.ac.id',
+      nim: '2311522040',
+      password: hashedPassword,
+      role: Role.PENGHUNI,
+      jekel: Jekel.LAKI_LAKI,
+      asal: 'Padang',
+      nomor_kamar: 'G-101',
+    },
+    {
       nama: 'Ahmad Fauzi',
       email: 'penghuni@unand.ac.id',
       nim: '2111012345',

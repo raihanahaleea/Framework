@@ -154,10 +154,7 @@ export default function Sidebar() {
       </aside>
 
       {/* Desktop sidebar */}
-      <aside
-        className={`sidebar${collapsed ? ' collapsed' : ''}`}
-        style={{ position: 'relative' }}
-      >
+      <aside className={`sidebar${collapsed ? ' collapsed' : ''}`}>
         {sidebarContent}
         <button
           onClick={() => setCollapsed(!collapsed)}
