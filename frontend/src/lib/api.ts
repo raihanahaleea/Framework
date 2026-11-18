@@ -33,8 +33,8 @@ api.interceptors.response.use(
   async (error) => {
     const config = error.config;
 
-    // Only fallback to mock if explicitly configured (default: FALSE to ensure 100% real data)
-    const useMock = import.meta.env.VITE_USE_MOCK === 'true';
+    // Fallback to mock if backend is offline/unreachable or explicitly enabled
+    const useMock = import.meta.env.VITE_USE_MOCK !== 'false';
 
     const isApi = !!(config?.baseURL?.includes('/api') || config?.url?.startsWith('/api') || config?.url?.startsWith('/'));
     const isNetworkOrOffline =
@@ -42,7 +42,7 @@ api.interceptors.response.use(
       error.code === 'ERR_NETWORK' ||
       error.code === 'ECONNABORTED' ||
       error.message?.includes('Network Error') ||
-      [502, 503, 504].includes(error.response?.status) ||
+      [500, 502, 503, 504].includes(error.response?.status) ||
       (error.response?.status === 404 && isApi);
 
     if (useMock && isNetworkOrOffline && config) {

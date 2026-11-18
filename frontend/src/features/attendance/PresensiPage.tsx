@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import {
   MapPin, Sun, Moon, CheckCircle2, Loader2, Clock,
   RefreshCw, Shield, Wifi, Building2, Camera, RotateCcw,
-  AlertTriangle, Navigation, Check, Info
+  AlertTriangle, Navigation, Check
 } from 'lucide-react';
 import api from '../../lib/api';
 import { getWIBTime, formatDate } from '../../lib/utils';
@@ -87,11 +87,6 @@ export default function PresensiPage() {
   const isSubuhActiveTime = currentMinutes >= 270 && currentMinutes <= 420;   // 04:30 - 07:00
   const isMalamActiveTime = currentMinutes >= 1260 && currentMinutes <= 1380; // 21:00 - 23:00
 
-  const detectedActiveType: JenisPresensi | null = isSubuhActiveTime
-    ? 'SUBUH'
-    : isMalamActiveTime
-    ? 'MALAM'
-    : null;
 
   // Selected session tab (defaults to active session, or whichever is nearest)
   const [selectedSession, setSelectedSession] = useState<JenisPresensi>(() => {

@@ -15,6 +15,22 @@ export interface MockDatabase {
 const initialDb: MockDatabase = {
   users: [
     {
+      id: 'user-penghuni-0',
+      name: 'Mahasiswa Asrama',
+      nim: '2311522040',
+      asal: 'Padang',
+      jenisKelamin: 'LAKI_LAKI',
+      email: '2311522040@student.unand.ac.id',
+      role: 'PENGHUNI',
+      isActive: true,
+      mustChangePassword: false,
+      gedungId: 'gedung-g',
+      kamarId: 'kamar-g-101',
+      gedung: { id: 'gedung-g', kode: 'G', nama: 'Hijau', kategori: 'PUTRA' },
+      kamar: { id: 'kamar-g-101', nama: 'Kamar G-101', nomorLantai: 1 },
+      createdAt: '2024-02-01T08:00:00Z',
+    },
+    {
       id: 'user-admin-1',
       name: 'Dr. Hendra Wijaya, M.Kom',
       email: 'admin@unand.ac.id',

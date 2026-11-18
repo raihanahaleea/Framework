@@ -1,14 +1,20 @@
-import { useEffect, useState } from 'react';
-import { FileClock } from 'lucide-react';
+import { useEffect, useState, useMemo } from 'react';
+import {
+  FileClock, CheckCircle2, Clock, XCircle,
+  FileText, Search, Eye, Calendar, X, AlertCircle, ShieldCheck
+} from 'lucide-react';
 import api from '../../lib/api';
 import { formatDate, getStatusIzinLabel } from '../../lib/utils';
-import type { PengajuanIzin, PaginatedResponse } from '../../types';
+import type { PengajuanIzin, PaginatedResponse, StatusPengajuanIzin } from '../../types';
+import './RiwayatIzinPage.css';
 
 export default function RiwayatIzinPage() {
   const [data, setData] = useState<PengajuanIzin[]>([]);
   const [meta, setMeta] = useState({ total: 0, page: 1, limit: 10, totalPages: 0 });
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<PengajuanIzin | null>(null);
+  const [filterStatus, setFilterStatus] = useState<'ALL' | StatusPengajuanIzin>('ALL');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     loadData();
@@ -29,135 +35,387 @@ export default function RiwayatIzinPage() {
     }
   };
 
-  const statusBadge = (status: string) => {
-    const cls = status === 'DISETUJUI' ? 'badge-disetujui' : status === 'DITOLAK' ? 'badge-ditolak' : 'badge-menunggu';
-    return <span className={`badge ${cls}`}>{getStatusIzinLabel(status as any)}</span>;
+  // Calculate statistics from data
+  const stats = useMemo(() => {
+    const total = data.length;
+    const pending = data.filter((d) => d.status === 'MENUNGGU').length;
+    const approved = data.filter((d) => d.status === 'DISETUJUI').length;
+    const rejected = data.filter((d) => d.status === 'DITOLAK').length;
+    return { total, pending, approved, rejected };
+  }, [data]);
+
+  // Filtered dataset for display
+  const filteredData = useMemo(() => {
+    return data.filter((item) => {
+      const matchStatus = filterStatus === 'ALL' || item.status === filterStatus;
+      const q = searchQuery.toLowerCase().trim();
+      const matchQuery =
+        !q ||
+        item.jenisIzin.toLowerCase().includes(q) ||
+        item.alasan.toLowerCase().includes(q) ||
+        (item.catatanFasil && item.catatanFasil.toLowerCase().includes(q));
+      return matchStatus && matchQuery;
+    });
+  }, [data, filterStatus, searchQuery]);
+
+  const renderStatusBadge = (status: StatusPengajuanIzin) => {
+    const cls =
+      status === 'DISETUJUI'
+        ? 'disetujui'
+        : status === 'DITOLAK'
+        ? 'ditolak'
+        : 'menunggu';
+    return (
+      <span className={`rizin-badge-status ${cls}`}>
+        <span className="rizin-status-dot" />
+        {getStatusIzinLabel(status)}
+      </span>
+    );
+  };
+
+  const calculateDays = (start: string, end: string) => {
+    try {
+      const d1 = new Date(start);
+      const d2 = new Date(end);
+      const diffTime = Math.abs(d2.getTime() - d1.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+      return `${diffDays} hari`;
+    } catch {
+      return '';
+    }
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="pb-2 border-b border-slate-200">
-        <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-          <FileClock size={20} className="text-emerald-800" />
-          Riwayat Pengajuan Izin
-        </h1>
-        <p className="text-xs text-slate-500 mt-0.5">Daftar status dan riwayat permohonan izin asrama Anda</p>
+    <div className="riwayat-izin-page animate-fade-in">
+      {/* ===== Header / Welcome Banner ===== */}
+      <div className="rizin-banner">
+        <div className="rizin-banner-left">
+          <div className="rizin-badge">
+            <ShieldCheck size={14} />
+            Portal Perizinan Asrama
+          </div>
+          <h1 className="rizin-title">Riwayat Pengajuan Izin</h1>
+          <p className="rizin-subtitle">
+            Daftar lengkap permohonan izin meninggalkan asrama, keputusan fasilitator, serta status verifikasi Anda.
+          </p>
+        </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200/90 shadow-2xs overflow-hidden">
+      {/* ===== Statistics Cards ===== */}
+      <div className="rizin-stats-grid">
+        <div className="rizin-stat-card">
+          <div className="rizin-stat-icon total">
+            <FileText size={20} />
+          </div>
+          <div className="rizin-stat-body">
+            <span className="rizin-stat-value">{stats.total}</span>
+            <span className="rizin-stat-label">Total Permohonan</span>
+          </div>
+        </div>
+
+        <div className="rizin-stat-card">
+          <div className="rizin-stat-icon menunggu">
+            <Clock size={20} />
+          </div>
+          <div className="rizin-stat-body">
+            <span className="rizin-stat-value">{stats.pending}</span>
+            <span className="rizin-stat-label">Menunggu Persetujuan</span>
+          </div>
+        </div>
+
+        <div className="rizin-stat-card">
+          <div className="rizin-stat-icon disetujui">
+            <CheckCircle2 size={20} />
+          </div>
+          <div className="rizin-stat-body">
+            <span className="rizin-stat-value">{stats.approved}</span>
+            <span className="rizin-stat-label">Izin Disetujui</span>
+          </div>
+        </div>
+
+        <div className="rizin-stat-card">
+          <div className="rizin-stat-icon ditolak">
+            <XCircle size={20} />
+          </div>
+          <div className="rizin-stat-body">
+            <span className="rizin-stat-value">{stats.rejected}</span>
+            <span className="rizin-stat-label">Izin Ditolak</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ===== Filter & Search Toolbar ===== */}
+      <div className="rizin-toolbar-card">
+        <div className="rizin-filter-tabs">
+          <button
+            type="button"
+            className={`rizin-filter-tab ${filterStatus === 'ALL' ? 'active' : ''}`}
+            onClick={() => setFilterStatus('ALL')}
+          >
+            <span>Semua</span>
+            <span className="rizin-tab-count">{stats.total}</span>
+          </button>
+          <button
+            type="button"
+            className={`rizin-filter-tab ${filterStatus === 'MENUNGGU' ? 'active' : ''}`}
+            onClick={() => setFilterStatus('MENUNGGU')}
+          >
+            <span>Menunggu</span>
+            <span className="rizin-tab-count">{stats.pending}</span>
+          </button>
+          <button
+            type="button"
+            className={`rizin-filter-tab ${filterStatus === 'DISETUJUI' ? 'active' : ''}`}
+            onClick={() => setFilterStatus('DISETUJUI')}
+          >
+            <span>Disetujui</span>
+            <span className="rizin-tab-count">{stats.approved}</span>
+          </button>
+          <button
+            type="button"
+            className={`rizin-filter-tab ${filterStatus === 'DITOLAK' ? 'active' : ''}`}
+            onClick={() => setFilterStatus('DITOLAK')}
+          >
+            <span>Ditolak</span>
+            <span className="rizin-tab-count">{stats.rejected}</span>
+          </button>
+        </div>
+
+        <div className="rizin-search-box">
+          <Search size={14} className="rizin-search-icon" />
+          <input
+            type="text"
+            placeholder="Cari jenis izin atau alasan..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="rizin-search-input"
+          />
+        </div>
+      </div>
+
+      {/* ===== Main Table & Cards View ===== */}
+      <div className="rizin-table-card">
         {loading ? (
-          <div className="p-6 space-y-2.5">
+          <div className="p-8 space-y-3">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-10 skeleton rounded-lg" />
+              <div key={i} className="h-12 skeleton rounded-xl" />
             ))}
           </div>
-        ) : data.length === 0 ? (
-          <div className="text-center py-12 text-slate-400">
-            <FileClock size={40} className="mx-auto mb-2 opacity-30" />
-            <p className="text-xs font-medium">Belum ada catatan pengajuan izin</p>
+        ) : filteredData.length === 0 ? (
+          <div className="rizin-empty-state">
+            <div className="rizin-empty-icon">
+              <FileClock size={32} />
+            </div>
+            <h3 className="rizin-empty-title">Tidak Ada Catatan Perizinan</h3>
+            <p className="rizin-empty-desc">
+              {searchQuery || filterStatus !== 'ALL'
+                ? 'Tidak ada data izin yang cocok dengan filter atau kata kunci pencarian Anda.'
+                : 'Anda belum memiliki riwayat pengajuan izin asrama.'}
+            </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs">
-              <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 font-semibold uppercase text-[10px] tracking-wider">
-                <tr>
-                  <th className="text-left py-3 px-4">Tanggal Diajukan</th>
-                  <th className="text-left py-3 px-4">Jenis Perizinan</th>
-                  <th className="text-left py-3 px-4">Periode Tanggal</th>
-                  <th className="text-left py-3 px-4">Status</th>
-                  <th className="text-right py-3 px-4">Detail</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
-                {data.map((item) => (
-                  <tr key={item.id} className="hover:bg-slate-50/60 transition-colors">
-                    <td className="py-3 px-4 font-mono text-slate-500">{formatDate(item.createdAt)}</td>
-                    <td className="py-3 px-4 font-semibold text-slate-900">{item.jenisIzin}</td>
-                    <td className="py-3 px-4 text-slate-700">
-                      {formatDate(item.tanggalMulai)} - {formatDate(item.tanggalSelesai)}
-                    </td>
-                    <td className="py-3 px-4">{statusBadge(item.status)}</td>
-                    <td className="py-3 px-4 text-right">
-                      <button
-                        onClick={() => setSelected(item)}
-                        className="text-[11px] font-semibold text-emerald-800 hover:text-emerald-700 px-2 py-1 rounded hover:bg-emerald-50 transition-colors"
-                      >
-                        Lihat
-                      </button>
-                    </td>
+          <>
+            {/* Desktop Table View */}
+            <div className="rizin-table-container overflow-x-auto">
+              <table className="rizin-table">
+                <thead>
+                  <tr>
+                    <th>Tanggal Diajukan</th>
+                    <th>Jenis Perizinan</th>
+                    <th>Periode Izin</th>
+                    <th>Status Keputusan</th>
+                    <th style={{ textAlign: 'right' }}>Aksi</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {filteredData.map((item) => (
+                    <tr key={item.id}>
+                      <td className="rizin-col-date">
+                        {formatDate(item.createdAt)}
+                      </td>
+                      <td>
+                        <div className="rizin-jenis-pill">
+                          <FileText size={15} className="text-emerald-700" />
+                          <span>{item.jenisIzin}</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div className="rizin-col-periode">
+                          {formatDate(item.tanggalMulai)} &ndash; {formatDate(item.tanggalSelesai)}
+                        </div>
+                        <div className="rizin-periode-sub">
+                          Durasi: {calculateDays(item.tanggalMulai, item.tanggalSelesai)}
+                        </div>
+                      </td>
+                      <td>{renderStatusBadge(item.status)}</td>
+                      <td style={{ textAlign: 'right' }}>
+                        <button
+                          type="button"
+                          onClick={() => setSelected(item)}
+                          className="btn-lihat-detail"
+                        >
+                          <Eye size={13} />
+                          <span>Detail</span>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Cards View */}
+            <div className="rizin-cards-list">
+              {filteredData.map((item) => (
+                <div key={item.id} className="rizin-mobile-card">
+                  <div className="rizin-mobile-card-top">
+                    <div>
+                      <div className="rizin-jenis-pill">
+                        <FileText size={15} className="text-emerald-700" />
+                        <span>{item.jenisIzin}</span>
+                      </div>
+                      <div className="rizin-col-date" style={{ marginTop: '3px' }}>
+                        Diajukan: {formatDate(item.createdAt)}
+                      </div>
+                    </div>
+                    {renderStatusBadge(item.status)}
+                  </div>
+
+                  <div className="rizin-mobile-card-body">
+                    <div>
+                      <strong>Periode:</strong> {formatDate(item.tanggalMulai)} &ndash; {formatDate(item.tanggalSelesai)} ({calculateDays(item.tanggalMulai, item.tanggalSelesai)})
+                    </div>
+                    <div>
+                      <strong>Alasan:</strong> {item.alasan.length > 60 ? item.alasan.slice(0, 60) + '...' : item.alasan}
+                    </div>
+                  </div>
+
+                  <div className="rizin-mobile-card-footer">
+                    <span className="text-xs text-slate-400 font-mono">ID: {item.id.slice(0, 8)}</span>
+                    <button
+                      type="button"
+                      onClick={() => setSelected(item)}
+                      className="btn-lihat-detail"
+                    >
+                      <Eye size={13} />
+                      <span>Lihat Detail</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
 
         {meta.totalPages > 1 && (
-          <div className="flex items-center justify-between p-3.5 border-t border-slate-100 text-xs text-slate-500">
+          <div className="rizin-pagination">
             <span>
-              Halaman {meta.page} dari {meta.totalPages}
+              Halaman <strong>{meta.page}</strong> dari <strong>{meta.totalPages}</strong> ({meta.total} data)
             </span>
-            <div className="flex gap-2">
+            <div className="rizin-pagination-btns">
               <button
+                type="button"
                 onClick={() => setMeta((m) => ({ ...m, page: m.page - 1 }))}
                 disabled={meta.page <= 1}
-                className="px-2.5 py-1 border border-slate-200 rounded text-xs disabled:opacity-50 hover:bg-slate-50"
+                className="rizin-page-btn"
               >
-                Sebelumnya
+                &larr; Sebelumnya
               </button>
               <button
+                type="button"
                 onClick={() => setMeta((m) => ({ ...m, page: m.page + 1 }))}
                 disabled={meta.page >= meta.totalPages}
-                className="px-2.5 py-1 border border-slate-200 rounded text-xs disabled:opacity-50 hover:bg-slate-50"
+                className="rizin-page-btn"
               >
-                Selanjutnya
+                Selanjutnya &rarr;
               </button>
             </div>
           </div>
         )}
       </div>
 
-      {/* Detail Modal */}
+      {/* ===== Detail Modal ===== */}
       {selected && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-2xs z-50 flex items-center justify-center p-4" onClick={() => setSelected(null)}>
-          <div className="bg-white rounded-xl max-w-sm w-full p-5 animate-fade-in shadow-xl border border-slate-200" onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-sm font-bold text-slate-900 mb-3 pb-2 border-b border-slate-100">
-              Detail Pengajuan Izin
-            </h3>
-            <div className="space-y-2 text-xs text-slate-700">
-              <div className="flex justify-between py-1 border-b border-slate-50">
-                <span className="text-slate-500">Jenis Izin</span>
-                <span className="font-semibold text-slate-900">{selected.jenisIzin}</span>
+        <div className="rizin-modal-overlay" onClick={() => setSelected(null)}>
+          <div className="rizin-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="rizin-modal-header">
+              <h3 className="rizin-modal-title">
+                <FileClock size={18} className="text-emerald-700" />
+                Rincian Pengajuan Izin
+              </h3>
+              <button
+                type="button"
+                onClick={() => setSelected(null)}
+                className="rizin-modal-close"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="rizin-modal-body">
+              <div className="rizin-modal-field">
+                <span className="rizin-modal-label">
+                  <FileText size={13} />
+                  Jenis Perizinan
+                </span>
+                <span className="rizin-modal-val">{selected.jenisIzin}</span>
               </div>
-              <div className="flex justify-between py-1 border-b border-slate-50">
-                <span className="text-slate-500">Periode</span>
-                <span className="font-medium text-slate-800">
-                  {formatDate(selected.tanggalMulai)} - {formatDate(selected.tanggalSelesai)}
+
+              <div className="rizin-modal-field">
+                <span className="rizin-modal-label">
+                  <Calendar size={13} />
+                  Periode Izin
+                </span>
+                <span className="rizin-modal-val">
+                  {formatDate(selected.tanggalMulai)} &ndash; {formatDate(selected.tanggalSelesai)}
+                  <br />
+                  <small className="text-slate-500 font-normal">
+                    ({calculateDays(selected.tanggalMulai, selected.tanggalSelesai)})
+                  </small>
                 </span>
               </div>
-              <div className="flex justify-between py-1 border-b border-slate-50">
-                <span className="text-slate-500">Status Keputusan</span>
-                {statusBadge(selected.status)}
+
+              <div className="rizin-modal-field">
+                <span className="rizin-modal-label">
+                  <Clock size={13} />
+                  Tanggal Diajukan
+                </span>
+                <span className="rizin-modal-val font-mono">{formatDate(selected.createdAt)}</span>
               </div>
-              <div>
-                <span className="text-slate-500 text-[11px] font-semibold block mb-0.5">Alasan:</span>
-                <p className="text-slate-800 bg-slate-50 p-2.5 rounded-lg border border-slate-100">{selected.alasan}</p>
+
+              <div className="rizin-modal-field">
+                <span className="rizin-modal-label">
+                  <AlertCircle size={13} />
+                  Status Keputusan
+                </span>
+                <div>{renderStatusBadge(selected.status)}</div>
               </div>
+
+              <div className="rizin-modal-box">
+                <div className="rizin-modal-box-title">Alasan Keperluan</div>
+                <p className="rizin-modal-box-text">{selected.alasan}</p>
+              </div>
+
               {selected.catatanFasil && (
-                <div>
-                  <span className="text-slate-500 text-[11px] font-semibold block mb-0.5">Catatan Pembina / Fasil:</span>
-                  <p className="text-emerald-900 bg-emerald-50 p-2.5 rounded-lg border border-emerald-100 font-medium">
-                    {selected.catatanFasil}
-                  </p>
+                <div className={`rizin-catatan-box ${selected.status === 'DITOLAK' ? 'ditolak' : ''}`}>
+                  <div className="rizin-catatan-title">
+                    {selected.status === 'DISETUJUI' ? 'Catatan Persetujuan Fasilitator:' : 'Alasan Penolakan Fasilitator:'}
+                  </div>
+                  <p className="rizin-modal-box-text">{selected.catatanFasil}</p>
                 </div>
               )}
             </div>
-            <button
-              onClick={() => setSelected(null)}
-              className="mt-4 w-full py-2 bg-slate-100 text-slate-700 rounded-lg font-medium text-xs hover:bg-slate-200 transition-colors"
-            >
-              Tutup
-            </button>
+
+            <div className="rizin-modal-footer">
+              <button
+                type="button"
+                onClick={() => setSelected(null)}
+                className="btn-lihat-detail"
+                style={{ padding: '8px 18px' }}
+              >
+                Tutup Jendela
+              </button>
+            </div>
           </div>
         </div>
       )}

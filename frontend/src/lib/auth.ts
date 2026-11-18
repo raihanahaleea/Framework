@@ -1,4 +1,4 @@
-import type { User } from '../types';
+import type { User, Role } from '../types';
 
 // We'll use a simple store pattern without zustand dep - using React context instead
 // But let's export auth helper functions
@@ -36,8 +36,19 @@ export function isAuthenticated(): boolean {
   return !!getAccessToken();
 }
 
+export function normalizeRole(role: string): Role {
+  // Backend enum uses PENGURUS; frontend uses FASIL for the same role
+  if (role === 'PENGURUS') return 'FASIL';
+  return role as Role;
+}
+
+export function normalizeUser<T extends { role?: string }>(user: T): T {
+  if (!user || !user.role) return user;
+  return { ...user, role: normalizeRole(user.role) } as T;
+}
+
 export function getRolePath(role: string): string {
-  switch (role) {
+  switch (normalizeRole(role)) {
     case 'PENGHUNI': return '/penghuni';
     case 'FASIL': return '/fasil';
     case 'ADMIN': return '/admin';
