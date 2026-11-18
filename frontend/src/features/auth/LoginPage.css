@@ -92,8 +92,15 @@
 }
 
 @keyframes pulse-dot {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
 }
 
 .navbar-subtitle {
@@ -290,10 +297,37 @@
   margin-right: -6px;
 }
 
-.gedung-badge.ga { background: #047857; }
-.gedung-badge.gb { background: #0f766e; }
-.gedung-badge.gc { background: #0e7490; }
-.gedung-badge.gd { background: #15803d; }
+.gedung-badge.ga {
+  background: #047857;
+}
+
+.gedung-badge.gb {
+  background: #0f766e;
+}
+
+.gedung-badge.gc {
+  background: #0e7490;
+}
+
+.gedung-badge.gd {
+  background: #15803d;
+}
+
+.gedung-badge.ge {
+  background: #b45309;
+}
+
+.gedung-badge.gf {
+  background: #ea580c;
+}
+
+.gedung-badge.gg {
+  background: #16a34a;
+}
+
+.gedung-badge.gh {
+  background: #0284c7;
+}
 
 .gedung-info {
   display: flex;

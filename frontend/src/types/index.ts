@@ -18,7 +18,7 @@ export interface User {
   mustChangePassword: boolean;
   gedungId?: string | null;
   kamarId?: string | null;
-  gedung?: { id: string; nama: string } | null;
+  gedung?: { id: string; nama: string; kode?: string; kategori?: 'PUTRA' | 'PUTRI' } | null;
   kamar?: { id: string; nama: string; nomorLantai?: number } | null;
   cakupanGedung?: { id: string; gedung: { id: string; nama: string } }[];
   createdAt: string;
@@ -28,6 +28,7 @@ export interface User {
 // ===== AUTH =====
 export interface LoginRequest {
   identifier: string;
+  email?: string;
   password: string;
 }
 
@@ -46,7 +47,10 @@ export interface AuthState {
 // ===== GEDUNG =====
 export interface Gedung {
   id: string;
+  kode?: string;
   nama: string;
+  kategori?: 'PUTRA' | 'PUTRI';
+  gender?: 'LAKI_LAKI' | 'PEREMPUAN';
   latitude: number;
   longitude: number;
   radiusPresensi: number;
@@ -78,10 +82,15 @@ export interface Presensi {
   userId: string;
   tanggalPresensi: string;
   jenisPresensi: JenisPresensi;
+  lokasi?: string;
   waktu: string;
   latitude: number;
   longitude: number;
   accuracy?: number | null;
+  jarakMeter?: number | null;
+  jarak_meter?: number | null;
+  fotoWajah?: string | null;
+  foto_wajah?: string | null;
   status: StatusPresensi;
   keterangan?: string | null;
   createdAt: string;
@@ -106,6 +115,8 @@ export interface CheckInRequest {
   latitude: number;
   longitude: number;
   accuracy?: number;
+  foto_wajah?: File | Blob;
+  jarakMeter?: number;
 }
 
 // ===== PENGAJUAN IZIN =====

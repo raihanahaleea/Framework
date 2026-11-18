@@ -12,7 +12,15 @@ import { PresensiModule } from './presensi/presensi.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: [
+        join(process.cwd(), '.env'),
+        join(process.cwd(), 'backend', '.env'),
+        join(__dirname, '..', '.env'),
+        join(__dirname, '..', '..', '.env'),
+      ],
+    }),
     ServeStaticModule.forRoot(
       {
         rootPath: join(__dirname, '..', 'uploads'),

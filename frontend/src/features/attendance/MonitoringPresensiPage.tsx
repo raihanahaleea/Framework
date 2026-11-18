@@ -178,64 +178,99 @@ export default function MonitoringPresensiPage() {
               <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 font-semibold uppercase text-[10px] tracking-wider">
                 <tr>
                   <th className="text-left py-3 px-4">Penghuni</th>
-                  <th className="text-left py-3 px-4">Gedung & Kamar</th>
+                  <th className="text-left py-3 px-4">Bukti Foto</th>
+                  <th className="text-left py-3 px-4">Gedung &amp; Kamar</th>
                   <th className="text-left py-3 px-4">Sesi Presensi</th>
                   <th className="text-left py-3 px-4">Waktu Check-In</th>
+                  <th className="text-left py-3 px-4">Jarak Asrama</th>
                   <th className="text-left py-3 px-4">Titik Geofence</th>
                   <th className="text-left py-3 px-4">Status</th>
                   <th className="text-right py-3 px-4">Detail</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-700">
-                {data.map((p) => (
-                  <tr key={p.id} className="hover:bg-slate-50/60 transition-colors">
-                    <td className="py-3 px-4">
-                      <div>
-                        <p className="font-semibold text-slate-900">{p.user?.name || '-'}</p>
-                        <p className="text-[11px] text-slate-400 font-mono">{p.user?.nim || '-'}</p>
-                      </div>
-                    </td>
-                    <td className="py-3 px-4">
-                      <p className="font-medium text-slate-800">{p.user?.gedung?.nama || '-'}</p>
-                      <p className="text-[11px] text-slate-400">{p.user?.kamar?.nama || '-'}</p>
-                    </td>
-                    <td className="py-3 px-4">
-                      <span className="inline-flex items-center gap-1 font-medium text-slate-700 bg-slate-100 px-2 py-0.5 rounded text-[11px]">
-                        {p.jenisPresensi === 'SUBUH' ? (
-                          <Sun size={12} className="text-amber-500" />
+                {data.map((p) => {
+                  const photo = p.fotoWajah || p.foto_wajah;
+                  const distance = p.jarakMeter ?? p.jarak_meter;
+
+                  return (
+                    <tr key={p.id} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="py-3 px-4">
+                        <div>
+                          <p className="font-semibold text-slate-900">{p.user?.name || '-'}</p>
+                          <p className="text-[11px] text-slate-400 font-mono">{p.user?.nim || '-'}</p>
+                        </div>
+                      </td>
+                      <td className="py-3 px-4">
+                        {photo ? (
+                          <div
+                            onClick={() => setSelectedItem(p)}
+                            className="cursor-pointer group relative w-9 h-9 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 flex items-center justify-center shadow-2xs hover:border-emerald-600 transition-all"
+                            title="Klik untuk melihat foto selfie"
+                          >
+                            <img
+                              src={photo}
+                              alt="Selfie"
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                            />
+                          </div>
                         ) : (
-                          <Moon size={12} className="text-emerald-700" />
+                          <span className="text-[10px] font-medium text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">
+                            QR Code
+                          </span>
                         )}
-                        {p.jenisPresensi === 'SUBUH' ? 'Subuh' : 'Malam'}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-slate-600">
-                      <p className="font-mono">{formatTime(p.waktu)} WIB</p>
-                      <p className="text-[11px] text-slate-400">{formatDate(p.tanggalPresensi)}</p>
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="flex items-center gap-1.5 font-mono text-[11px] text-slate-600">
-                        <MapPin size={12} className="text-emerald-800" />
-                        <span>
-                          {p.latitude?.toFixed(4)}, {p.longitude?.toFixed(4)}
+                      </td>
+                      <td className="py-3 px-4">
+                        <p className="font-medium text-slate-800">{p.user?.gedung?.nama || '-'}</p>
+                        <p className="text-[11px] text-slate-400">{p.user?.kamar?.nama || '-'}</p>
+                      </td>
+                      <td className="py-3 px-4">
+                        <span className="inline-flex items-center gap-1 font-medium text-slate-700 bg-slate-100 px-2 py-0.5 rounded text-[11px]">
+                          {p.jenisPresensi === 'SUBUH' ? (
+                            <Sun size={12} className="text-amber-500" />
+                          ) : (
+                            <Moon size={12} className="text-emerald-700" />
+                          )}
+                          {p.jenisPresensi === 'SUBUH' ? 'Subuh' : 'Malam'}
                         </span>
-                      </div>
-                    </td>
-                    <td className="py-3 px-4">
-                      <span className={`badge badge-${p.status.toLowerCase()}`}>
-                        {getStatusPresensiLabel(p.status)}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-right">
-                      <button
-                        onClick={() => setSelectedItem(p)}
-                        className="text-[11px] font-semibold text-emerald-800 hover:text-emerald-700 px-2 py-1 rounded hover:bg-emerald-50 transition-colors"
-                      >
-                        Lihat Detail
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td className="py-3 px-4 text-slate-600">
+                        <p className="font-mono">{formatTime(p.waktu)} WIB</p>
+                        <p className="text-[11px] text-slate-400">{formatDate(p.tanggalPresensi)}</p>
+                      </td>
+                      <td className="py-3 px-4 font-medium text-slate-700">
+                        {distance !== undefined && distance !== null ? (
+                          <span className={distance <= 200 ? 'text-emerald-800 font-semibold' : 'text-rose-600 font-semibold'}>
+                            {distance} m
+                          </span>
+                        ) : (
+                          <span className="text-slate-400">Dalam Radius</span>
+                        )}
+                      </td>
+                      <td className="py-3 px-4">
+                        <div className="flex items-center gap-1.5 font-mono text-[11px] text-slate-600">
+                          <MapPin size={12} className="text-emerald-800" />
+                          <span>
+                            {p.latitude ? `${p.latitude.toFixed(4)}, ${p.longitude.toFixed(4)}` : '-'}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="py-3 px-4">
+                        <span className={`badge badge-${p.status.toLowerCase()}`}>
+                          {getStatusPresensiLabel(p.status)}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        <button
+                          onClick={() => setSelectedItem(p)}
+                          className="text-[11px] font-semibold text-emerald-800 hover:text-emerald-700 px-2 py-1 rounded hover:bg-emerald-50 transition-colors"
+                        >
+                          Lihat Detail
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -268,39 +303,73 @@ export default function MonitoringPresensiPage() {
 
       {/* Modal Detail */}
       {selectedItem && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-2xs z-50 flex items-center justify-center p-4" onClick={() => setSelectedItem(null)}>
-          <div className="bg-white rounded-xl max-w-sm w-full p-5 animate-fade-in shadow-xl border border-slate-200" onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-sm font-bold text-slate-900 mb-3 pb-2 border-b border-slate-100">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-2xs z-50 flex items-center justify-center p-4 animate-fade-in" onClick={() => setSelectedItem(null)}>
+          <div className="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl border border-slate-200" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-sm font-bold text-slate-900 mb-3 pb-2 border-b border-slate-100 flex items-center gap-1.5">
+              <ClipboardCheck size={16} className="text-emerald-800" />
               Verifikasi Detail Presensi
             </h3>
-            <div className="space-y-2.5 text-xs text-slate-700">
-              <div className="flex justify-between py-1 border-b border-slate-50">
+
+            {/* Photo preview */}
+            <div className="mb-3">
+              {selectedItem.fotoWajah || selectedItem.foto_wajah ? (
+                <div className="relative rounded-xl overflow-hidden aspect-square bg-slate-950 border border-slate-200">
+                  <img
+                    src={selectedItem.fotoWajah || selectedItem.foto_wajah || ''}
+                    alt="Foto Selfie Bukti"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute bottom-2 left-2 right-2 bg-slate-900/75 backdrop-blur-xs text-white text-[11px] py-1 px-2.5 rounded-lg flex items-center justify-between">
+                    <span>Foto Selfie Penghuni</span>
+                    <span className="font-mono">{formatTime(selectedItem.waktu)} WIB</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="rounded-xl border-2 border-dashed border-slate-200 p-4 text-center bg-slate-50">
+                  <p className="text-xs font-semibold text-slate-700">Presensi QR Code</p>
+                  <p className="text-[11px] text-slate-400 mt-0.5">
+                    Data lama menggunakan validasi QR Code (tanpa foto selfie).
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-2 text-xs text-slate-700 bg-slate-50 p-3 rounded-xl border border-slate-100">
+              <div className="flex justify-between py-0.5">
                 <span className="text-slate-500">Warga Asrama</span>
                 <span className="font-semibold text-slate-900">{selectedItem.user?.name}</span>
               </div>
-              <div className="flex justify-between py-1 border-b border-slate-50">
+              <div className="flex justify-between py-0.5">
                 <span className="text-slate-500">NIM</span>
                 <span className="font-mono text-slate-800">{selectedItem.user?.nim}</span>
               </div>
-              <div className="flex justify-between py-1 border-b border-slate-50">
+              <div className="flex justify-between py-0.5">
                 <span className="text-slate-500">Gedung / Kamar</span>
                 <span>
                   {selectedItem.user?.gedung?.nama} ({selectedItem.user?.kamar?.nama})
                 </span>
               </div>
-              <div className="flex justify-between py-1 border-b border-slate-50">
+              <div className="flex justify-between py-0.5">
                 <span className="text-slate-500">Waktu & Sesi</span>
                 <span className="font-mono">
                   {formatTime(selectedItem.waktu)} WIB ({selectedItem.jenisPresensi})
                 </span>
               </div>
-              <div className="flex justify-between py-1 border-b border-slate-50">
-                <span className="text-slate-500">Koordinat GPS</span>
-                <span className="font-mono text-[11px]">
-                  {selectedItem.latitude}, {selectedItem.longitude}
+              <div className="flex justify-between py-0.5">
+                <span className="text-slate-500">Jarak ke Asrama</span>
+                <span className="font-semibold text-emerald-800">
+                  {selectedItem.jarakMeter ?? selectedItem.jarak_meter
+                    ? `${selectedItem.jarakMeter ?? selectedItem.jarak_meter} meter`
+                    : 'Dalam Radius Terverifikasi'}
                 </span>
               </div>
-              <div className="flex justify-between py-1 border-b border-slate-50">
+              <div className="flex justify-between py-0.5">
+                <span className="text-slate-500">Koordinat GPS</span>
+                <span className="font-mono text-[11px]">
+                  {selectedItem.latitude ? `${selectedItem.latitude.toFixed(5)}, ${selectedItem.longitude.toFixed(5)}` : '-'}
+                </span>
+              </div>
+              <div className="flex justify-between py-0.5">
                 <span className="text-slate-500">Status Kehadiran</span>
                 <span className={`badge badge-${selectedItem.status.toLowerCase()}`}>
                   {getStatusPresensiLabel(selectedItem.status)}
@@ -310,7 +379,7 @@ export default function MonitoringPresensiPage() {
 
             <button
               onClick={() => setSelectedItem(null)}
-              className="mt-4 w-full py-2 bg-slate-100 text-slate-700 rounded-lg font-medium text-xs hover:bg-slate-200 transition-colors"
+              className="mt-4 w-full py-2 bg-slate-100 text-slate-700 rounded-xl font-medium text-xs hover:bg-slate-200 transition-colors"
             >
               Tutup
             </button>

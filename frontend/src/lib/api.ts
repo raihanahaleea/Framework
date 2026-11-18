@@ -21,22 +21,31 @@ api.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
-// Response interceptor for fallback to mock data when backend is not connected
+// Response interceptor to unwrap NestJS ResponseInterceptor and handle errors
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // If backend wrapped response in { success: true, data: ... }, unwrap it cleanly for frontend consumers
+    if (response?.data && response.data.success === true && response.data.data !== undefined) {
+      response.data = response.data.data;
+    }
+    return response;
+  },
   async (error) => {
     const config = error.config;
 
-    // Check if error is due to backend unavailable (Network Error, 502, 503, 504, or 404 on API)
+    // Only fallback to mock if explicitly configured (default: FALSE to ensure 100% real data)
+    const useMock = import.meta.env.VITE_USE_MOCK === 'true';
+
+    const isApi = !!(config?.baseURL?.includes('/api') || config?.url?.startsWith('/api') || config?.url?.startsWith('/'));
     const isNetworkOrOffline =
       !error.response ||
       error.code === 'ERR_NETWORK' ||
       error.code === 'ECONNABORTED' ||
       error.message?.includes('Network Error') ||
       [502, 503, 504].includes(error.response?.status) ||
-      (error.response?.status === 404 && config?.url?.startsWith('/api') || !error.response?.data?.message);
+      (error.response?.status === 404 && isApi);
 
-    if (isNetworkOrOffline && config) {
+    if (useMock && isNetworkOrOffline && config) {
       console.warn(`[API Offline Fallback] Serving mock response for ${config.method?.toUpperCase()} ${config.url}`);
       try {
         let reqData = config.data;
@@ -56,6 +65,11 @@ api.interceptors.response.use(
       } catch (mockErr: any) {
         return Promise.reject(mockErr);
       }
+    }
+
+    // Enhance network error message when backend is not running
+    if (!error.response && (error.code === 'ERR_NETWORK' || error.message?.includes('Network Error'))) {
+      error.message = 'Gagal terhubung ke backend NestJS (port 3000). Pastikan server backend sedang berjalan.';
     }
 
     if (error.response?.status === 401) {

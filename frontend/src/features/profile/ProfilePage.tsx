@@ -35,6 +35,15 @@ export default function ProfilePage() {
     }
   };
 
+  const getGedungDisplay = () => {
+    if (!user?.gedung) return '-';
+    const kode = user.gedung.kode ? `Gedung ${user.gedung.kode} - ` : '';
+    const kat = user.gedung.kategori
+      ? ` (${user.gedung.kategori === 'PUTRI' ? 'Asrama Putri' : 'Asrama Putra'})`
+      : '';
+    return `${kode}${user.gedung.nama}${kat}`;
+  };
+
   const info = [
     { label: 'Nama Lengkap', value: user?.name },
     { label: 'Alamat Email', value: user?.email },
@@ -42,7 +51,7 @@ export default function ProfilePage() {
     { label: 'Asal Daerah', value: user?.asal || '-' },
     { label: 'Jenis Kelamin', value: user?.jenisKelamin ? getJenisKelaminLabel(user.jenisKelamin) : '-' },
     { label: 'Peran / Hak Akses', value: user?.role ? getRoleLabel(user.role) : '-' },
-    { label: 'Gedung Asrama', value: user?.gedung?.nama || '-' },
+    { label: 'Gedung Asrama', value: getGedungDisplay() },
     { label: 'Unit Kamar', value: user?.kamar?.nama || '-' },
   ];
 

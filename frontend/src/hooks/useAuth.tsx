@@ -48,12 +48,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [refreshUser]);
 
   const login = useCallback(async (data: LoginRequest): Promise<LoginResponse> => {
-    const res = await api.post<LoginResponse>('/auth/login', data);
-    const { accessToken, refreshToken, user: userData } = res.data;
-    setTokens(accessToken, refreshToken);
-    setUser(userData);
-    setStoredUser(userData);
-    return res.data;
+    const res = await api.post<any>('/auth/login', data);
+    const raw = res.data;
+    const payload = (raw && raw.success === true && raw.data !== undefined) ? raw.data : raw;
+    const accessToken = payload?.accessToken || payload?.access_token || '';
+    const refreshToken = payload?.refreshToken || payload?.refresh_token || accessToken;
+    const userData = payload?.user;
+
+    if (accessToken && userData) {
+      setTokens(accessToken, refreshToken);
+      setUser(userData);
+      setStoredUser(userData);
+    }
+    return { ...payload, accessToken, refreshToken, user: userData };
   }, []);
 
   const logout = useCallback(async () => {

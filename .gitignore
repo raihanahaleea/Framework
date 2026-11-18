@@ -14,4 +14,4 @@ build/
 .env
 .env.local
 
-Add-Content .gitignore "`nbackend/node_modules/`nbackend/dist/`nbackend/.env`nbackend/uploads/"
+Add-Content .gitignore "`nbackend/node_modules/`nbackend/dist/`nbackend/.env`nbackend/uploads/"backend/tsconfig.tsbuildinfo

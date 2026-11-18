@@ -91,8 +91,18 @@ export default function PenghuniDashboard() {
                   <MapPin size={15} />
                 </div>
               </div>
-              <div className="stat-card-value">{user?.gedung?.nama || 'Gedung A'}</div>
-              <div className="stat-card-sub">Kampus Limau Manis</div>
+              <div className="stat-card-value">
+                {user?.gedung?.nama
+                  ? `${user.gedung.kode ? 'Gedung ' + user.gedung.kode + ' - ' : ''}${user.gedung.nama}`
+                  : 'Gedung A - RPX'}
+              </div>
+              <div className="stat-card-sub">
+                {user?.gedung?.kategori === 'PUTRI'
+                  ? 'Asrama Putri • Kampus Limau Manis'
+                  : user?.gedung?.kategori === 'PUTRA'
+                  ? 'Asrama Putra • Kampus Limau Manis'
+                  : 'Kampus Limau Manis'}
+              </div>
             </div>
 
             <div className="stat-card">

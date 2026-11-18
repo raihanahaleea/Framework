@@ -1,5 +1,5 @@
 import { getMockDb, saveMockDb } from './mockData';
-import { getStoredUser } from './auth';
+import { getStoredUser, setStoredUser } from './auth';
 
 // Helper to simulate network latency
 export const delay = (ms = 200) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -7,7 +7,23 @@ export const delay = (ms = 200) => new Promise((resolve) => setTimeout(resolve, 
 export async function handleMockApi(url: string, method: string, data?: any, params?: any): Promise<any> {
   const db = getMockDb();
   const cleanUrl = url.replace(/^\/api/, '').split('?')[0];
-  const currentUser = getStoredUser() || db.users[0];
+  let currentUser = getStoredUser();
+
+  // If currentUser has stale/cached data, sync with latest fresh definition from db.users
+  if (currentUser) {
+    const fresh = db.users.find(
+      (u) =>
+        u.id === currentUser?.id ||
+        (u.email && currentUser?.email && u.email.toLowerCase() === currentUser.email.toLowerCase()) ||
+        (u.nim && currentUser?.nim && u.nim === currentUser.nim)
+    );
+    if (fresh) {
+      currentUser = { ...currentUser, ...fresh };
+      setStoredUser(currentUser);
+    }
+  } else {
+    currentUser = db.users[0];
+  }
 
   // ===== AUTH =====
   if (cleanUrl === '/auth/login' && method.toUpperCase() === 'POST') {
@@ -15,7 +31,7 @@ export async function handleMockApi(url: string, method: string, data?: any, par
     // Match by email or nim
     const found = db.users.find(
       (u) =>
-        u.email.toLowerCase() === identifier.toLowerCase() ||
+        (u.email && identifier && u.email.toLowerCase() === identifier.toLowerCase()) ||
         (u.nim && u.nim === identifier)
     );
 
@@ -24,6 +40,8 @@ export async function handleMockApi(url: string, method: string, data?: any, par
       err.response = { status: 401, data: { message: 'Email atau NIM tidak terdaftar' } };
       throw err;
     }
+
+    setStoredUser(found);
 
     return {
       data: {
@@ -35,7 +53,16 @@ export async function handleMockApi(url: string, method: string, data?: any, par
   }
 
   if (cleanUrl === '/auth/me' && method.toUpperCase() === 'GET') {
-    return { data: currentUser };
+    const userFromDb = db.users.find(
+      (u) =>
+        u.id === currentUser?.id ||
+        (u.email && currentUser?.email && u.email.toLowerCase() === currentUser.email.toLowerCase()) ||
+        (u.nim && currentUser?.nim && u.nim === currentUser.nim)
+    ) || currentUser;
+    if (userFromDb) {
+      setStoredUser(userFromDb);
+    }
+    return { data: userFromDb };
   }
 
   if (cleanUrl === '/auth/logout' && method.toUpperCase() === 'POST') {
@@ -155,8 +182,92 @@ export async function handleMockApi(url: string, method: string, data?: any, par
     };
   }
 
-  if (cleanUrl === '/attendance/check-in' && method.toUpperCase() === 'POST') {
-    const { jenisPresensi, latitude, longitude, accuracy } = data || {};
+  if ((cleanUrl === '/attendance/config' || cleanUrl === '/presensi/config') && method.toUpperCase() === 'GET') {
+    return {
+      data: {
+        centerLat: -0.9169337875669057,
+        centerLong: 100.45326630992055,
+        maxRadiusMeters: 200,
+        maxAccuracyMeters: 50,
+        lokasiNama: 'Kompleks Asrama Mahasiswa Universitas Andalas',
+      },
+    };
+  }
+
+  if ((cleanUrl === '/attendance/check-in' || cleanUrl === '/presensi') && method.toUpperCase() === 'POST') {
+    let jenisPresensi = 'SUBUH';
+    let latitude = -0.91533;
+    let longitude = 100.46095;
+    let accuracy = 15;
+    let fotoWajah = '';
+
+    if (data instanceof FormData) {
+      jenisPresensi = (data.get('jenisPresensi') as string) || 'SUBUH';
+      latitude = Number(data.get('latitude') || data.get('lat') || -0.91533);
+      longitude = Number(data.get('longitude') || data.get('long') || 100.46095);
+      accuracy = Number(data.get('accuracy') || 15);
+      const fotoFile = data.get('foto_wajah') || data.get('foto');
+      if (fotoFile && typeof fotoFile === 'object' && 'name' in fotoFile) {
+        fotoWajah = URL.createObjectURL(fotoFile as Blob);
+      } else {
+        fotoWajah = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80';
+      }
+    } else if (data) {
+      jenisPresensi = data.jenisPresensi || 'SUBUH';
+      latitude = Number(data.latitude || data.lat || -0.91533);
+      longitude = Number(data.longitude || data.long || 100.46095);
+      accuracy = Number(data.accuracy || 15);
+      fotoWajah = data.fotoWajah || data.foto_wajah || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80';
+    }
+
+    // Geofencing Haversine validation
+    const centerLat = -0.9169337875669057;
+    const centerLong = 100.45326630992055;
+    const maxRadius = 200;
+    const maxAccuracy = 50;
+
+    // Requirement 6: Validate GPS Accuracy
+    if (accuracy > maxAccuracy) {
+      const err: any = new Error(`Akurasi sinyal GPS perangkat Anda terlalu rendah (±${Math.round(accuracy)} m, toleransi maksimal: ${maxAccuracy} m).`);
+      err.response = {
+        status: 400,
+        data: {
+          statusCode: 400,
+          message: `Akurasi sinyal GPS perangkat Anda terlalu rendah (±${Math.round(accuracy)} m, toleransi maksimal: ${maxAccuracy} m). Silakan perbarui lokasi GPS Anda di ruang terbuka.`,
+          error: 'Bad Request',
+        },
+      };
+      throw err;
+    }
+
+    // Haversine formula (exact)
+    const R = 6371000;
+    const toRad = (x: number) => (x * Math.PI) / 180;
+    const phi1 = toRad(latitude);
+    const phi2 = toRad(centerLat);
+    const dLat = toRad(centerLat - latitude);
+    const dLon = toRad(centerLong - longitude);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(phi1) * Math.cos(phi2) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distanceMeters = Math.round(R * c);
+
+    // Requirement 4 & 5: Validate distance
+    if (distanceMeters > maxRadius) {
+      const err: any = new Error(`Presensi ditolak! Anda berada di luar radius area asrama (jarak: ${distanceMeters} m dari titik pusat asrama, batas maksimal: ${maxRadius} m).`);
+      err.response = {
+        status: 400,
+        data: {
+          statusCode: 400,
+          message: `Presensi ditolak! Anda berada di luar radius area asrama (jarak: ${distanceMeters} m dari titik pusat asrama, batas maksimal: ${maxRadius} m).`,
+          error: 'Bad Request',
+        },
+      };
+      throw err;
+    }
+
     const todayStr = new Date().toISOString().split('T')[0];
 
     const newPresensi: any = {
@@ -167,7 +278,11 @@ export async function handleMockApi(url: string, method: string, data?: any, par
       waktu: new Date().toISOString(),
       latitude,
       longitude,
-      accuracy: accuracy || 10,
+      accuracy,
+      jarakMeter: distanceMeters,
+      jarak_meter: distanceMeters,
+      fotoWajah,
+      foto_wajah: fotoWajah,
       status: 'HADIR',
       createdAt: new Date().toISOString(),
       user: {
@@ -182,7 +297,12 @@ export async function handleMockApi(url: string, method: string, data?: any, par
     db.presensi.unshift(newPresensi);
     saveMockDb(db);
 
-    return { data: { message: `Presensi ${jenisPresensi} berhasil dicatat!`, presensi: newPresensi } };
+    return {
+      data: {
+        message: `Presensi ${jenisPresensi} berhasil dicatat (Jarak: ${distanceMeters}m)!`,
+        presensi: newPresensi,
+      },
+    };
   }
 
   if (cleanUrl === '/attendance/me' && method.toUpperCase() === 'GET') {

@@ -11,12 +11,15 @@ export default function BuildingsPage() {
   const [showModal, setShowModal] = useState(false);
   const [editingBuilding, setEditingBuilding] = useState<Gedung | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [kategoriFilter, setKategoriFilter] = useState<'ALL' | 'PUTRI' | 'PUTRA'>('ALL');
 
   const [form, setForm] = useState({
+    kode: '',
     nama: '',
+    kategori: 'PUTRI',
     latitude: -0.9152,
     longitude: 100.4612,
-    radiusPresensi: 100,
+    radiusPresensi: 150,
   });
 
   useEffect(() => {
@@ -38,10 +41,12 @@ export default function BuildingsPage() {
   const openCreate = () => {
     setEditingBuilding(null);
     setForm({
+      kode: 'A',
       nama: '',
+      kategori: 'PUTRI',
       latitude: -0.9152,
       longitude: 100.4612,
-      radiusPresensi: 100,
+      radiusPresensi: 150,
     });
     setShowModal(true);
   };
@@ -49,7 +54,9 @@ export default function BuildingsPage() {
   const openEdit = (b: Gedung) => {
     setEditingBuilding(b);
     setForm({
+      kode: b.kode || '',
       nama: b.nama,
+      kategori: b.kategori || (['A', 'B', 'C', 'D', 'E'].includes(b.kode || '') ? 'PUTRI' : 'PUTRA'),
       latitude: b.latitude,
       longitude: b.longitude,
       radiusPresensi: b.radiusPresensi,
@@ -92,7 +99,18 @@ export default function BuildingsPage() {
     }
   };
 
-  const filtered = data.filter((b) => b.nama.toLowerCase().includes(search.toLowerCase()));
+  const filtered = data
+    .filter(
+      (b) =>
+        b.nama.toLowerCase().includes(search.toLowerCase()) ||
+        (b.kode && b.kode.toLowerCase().includes(search.toLowerCase()))
+    )
+    .filter((b) => {
+      const isPutri = b.kategori === 'PUTRI' || ['A', 'B', 'C', 'D', 'E'].includes(b.kode || '');
+      if (kategoriFilter === 'PUTRI') return isPutri;
+      if (kategoriFilter === 'PUTRA') return !isPutri;
+      return true;
+    });
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -102,7 +120,9 @@ export default function BuildingsPage() {
             <Building2 size={20} className="text-emerald-800" />
             Data Gedung Asrama
           </h1>
-          <p className="text-xs text-slate-500 mt-0.5">Kelola data gedung, titik koordinat GPS, dan radius presensi geofence</p>
+          <p className="text-xs text-slate-500 mt-0.5">
+            Daftar resmi 8 kompleks asrama Universitas Andalas: Gedung A–E (Putri) dan Gedung F–H (Putra)
+          </p>
         </div>
         <button
           onClick={openCreate}
@@ -113,13 +133,47 @@ export default function BuildingsPage() {
         </button>
       </div>
 
+      {/* Filter Tabs by Gender */}
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => setKategoriFilter('ALL')}
+          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${kategoriFilter === 'ALL'
+              ? 'bg-emerald-800 text-white'
+              : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+            }`}
+        >
+          Semua Asrama ({data.length})
+        </button>
+        <button
+          type="button"
+          onClick={() => setKategoriFilter('PUTRI')}
+          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${kategoriFilter === 'PUTRI'
+              ? 'bg-pink-700 text-white'
+              : 'bg-white border border-slate-200 text-pink-700 hover:bg-pink-50'
+            }`}
+        >
+          ♀ Asrama Putri / Cewek (Gedung A–E)
+        </button>
+        <button
+          type="button"
+          onClick={() => setKategoriFilter('PUTRA')}
+          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${kategoriFilter === 'PUTRA'
+              ? 'bg-blue-700 text-white'
+              : 'bg-white border border-slate-200 text-blue-700 hover:bg-blue-50'
+            }`}
+        >
+          ♂ Asrama Putra / Cowo (Gedung F–H)
+        </button>
+      </div>
+
       {/* Search & Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="sm:col-span-2 relative">
           <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
-            placeholder="Cari gedung asrama..."
+            placeholder="Cari asrama berdasarkan nama atau kode (RPX, Rusunawa, Hijau, dll)..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-9 pr-3.5 py-2 bg-white border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-700"
@@ -127,7 +181,7 @@ export default function BuildingsPage() {
         </div>
         <div className="bg-white px-3.5 py-2 border border-slate-200 rounded-lg text-xs flex items-center justify-between text-slate-600">
           <span>Total Gedung Terdaftar:</span>
-          <span className="font-bold text-slate-900">{data.length} Gedung</span>
+          <span className="font-bold text-slate-900">{filtered.length} Asrama</span>
         </div>
       </div>
 
@@ -145,69 +199,91 @@ export default function BuildingsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map((b) => (
-            <div
-              key={b.id}
-              className="bg-white rounded-xl border border-slate-200/90 shadow-2xs hover:border-slate-300 transition-all p-4 flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex items-start justify-between gap-3 mb-2">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-800 flex items-center justify-center font-bold">
-                      <Building2 size={18} />
+          {filtered.map((b) => {
+            const isPutri = b.kategori === 'PUTRI' || ['A', 'B', 'C', 'D', 'E'].includes(b.kode || '');
+
+            return (
+              <div
+                key={b.id}
+                className="bg-white rounded-xl border border-slate-200/90 shadow-2xs hover:border-slate-300 transition-all p-4 flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-start justify-between gap-3 mb-2">
+                    <div className="flex items-start gap-2.5">
+                      <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center font-bold flex-shrink-0">
+                        {b.kode ? (
+                          <span className="text-sm font-black font-mono">G{b.kode}</span>
+                        ) : (
+                          <Building2 size={18} />
+                        )}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-1.5 mb-1">
+                          {b.kode && (
+                            <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-900 text-white">
+                              Gedung {b.kode}
+                            </span>
+                          )}
+                          <span
+                            className={`px-2 py-0.5 rounded text-[10px] font-semibold ${isPutri
+                                ? 'bg-pink-50 text-pink-700 border border-pink-200'
+                                : 'bg-blue-50 text-blue-700 border border-blue-200'
+                              }`}
+                          >
+                            {isPutri ? '♀ Asrama Putri (Cewek)' : '♂ Asrama Putra (Cowo)'}
+                          </span>
+                        </div>
+                        <h3 className="font-bold text-slate-900 text-sm">{b.nama}</h3>
+                        <span className={`badge ${b.isActive ? 'badge-hadir' : 'badge-alpa'} text-[10px] mt-0.5`}>
+                          {b.isActive ? 'Status Aktif' : 'Nonaktif'}
+                        </span>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-bold text-slate-900 text-sm">{b.nama}</h3>
-                      <span className={`badge ${b.isActive ? 'badge-hadir' : 'badge-alpa'} text-[10px] mt-0.5`}>
-                        {b.isActive ? 'Status Aktif' : 'Nonaktif'}
+                  </div>
+
+                  <div className="space-y-1.5 text-xs text-slate-600 my-3 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                    <div className="flex items-center gap-1.5">
+                      <MapPin size={13} className="text-emerald-700 flex-shrink-0" />
+                      <span className="truncate font-mono text-[11px]">
+                        {b.latitude.toFixed(6)}, {b.longitude.toFixed(6)}
                       </span>
                     </div>
+                    <div className="flex items-center justify-between pt-1 border-t border-slate-200/60 text-[11px]">
+                      <span className="text-slate-500">Radius Geofence:</span>
+                      <span className="font-semibold text-slate-800">{b.radiusPresensi} meter</span>
+                    </div>
+                    <div className="flex items-center justify-between pt-1 border-t border-slate-200/60 text-[11px]">
+                      <span className="text-slate-500">Jumlah Kamar:</span>
+                      <span className="font-semibold text-slate-800">{b._count?.kamar ?? 16} Unit</span>
+                    </div>
+                    <div className="flex items-center justify-between pt-1 border-t border-slate-200/60 text-[11px]">
+                      <span className="text-slate-500">Total Penghuni:</span>
+                      <span className="font-semibold text-slate-800">{b._count?.users ?? 48} Orang</span>
+                    </div>
                   </div>
                 </div>
 
-                <div className="space-y-1.5 text-xs text-slate-600 my-3 bg-slate-50 p-3 rounded-lg border border-slate-100">
-                  <div className="flex items-center gap-1.5">
-                    <MapPin size={13} className="text-emerald-700 flex-shrink-0" />
-                    <span className="truncate font-mono text-[11px]">
-                      {b.latitude.toFixed(6)}, {b.longitude.toFixed(6)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between pt-1 border-t border-slate-200/60 text-[11px]">
-                    <span className="text-slate-500">Radius Geofence:</span>
-                    <span className="font-semibold text-slate-800">{b.radiusPresensi} meter</span>
-                  </div>
-                  <div className="flex items-center justify-between pt-1 border-t border-slate-200/60 text-[11px]">
-                    <span className="text-slate-500">Jumlah Kamar:</span>
-                    <span className="font-semibold text-slate-800">{b._count?.kamar ?? 12} Unit</span>
-                  </div>
-                  <div className="flex items-center justify-between pt-1 border-t border-slate-200/60 text-[11px]">
-                    <span className="text-slate-500">Total Penghuni:</span>
-                    <span className="font-semibold text-slate-800">{b._count?.users ?? 34} Orang</span>
-                  </div>
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                  <button
+                    onClick={() => handleToggleStatus(b)}
+                    className={`px-2.5 py-1 rounded-md text-[11px] font-medium flex items-center gap-1 transition-colors ${b.isActive ? 'text-red-700 hover:bg-red-50' : 'text-emerald-800 hover:bg-emerald-50'
+                      }`}
+                    title={b.isActive ? 'Nonaktifkan' : 'Aktifkan'}
+                  >
+                    <Power size={12} />
+                    {b.isActive ? 'Nonaktifkan' : 'Aktifkan'}
+                  </button>
+                  <button
+                    onClick={() => openEdit(b)}
+                    className="px-2.5 py-1 text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 rounded-md transition-colors flex items-center gap-1 text-[11px] font-medium border border-slate-200"
+                  >
+                    <Edit2 size={12} />
+                    Edit
+                  </button>
                 </div>
               </div>
-
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-                <button
-                  onClick={() => handleToggleStatus(b)}
-                  className={`px-2.5 py-1 rounded-md text-[11px] font-medium flex items-center gap-1 transition-colors ${
-                    b.isActive ? 'text-red-700 hover:bg-red-50' : 'text-emerald-800 hover:bg-emerald-50'
-                  }`}
-                  title={b.isActive ? 'Nonaktifkan' : 'Aktifkan'}
-                >
-                  <Power size={12} />
-                  {b.isActive ? 'Nonaktifkan' : 'Aktifkan'}
-                </button>
-                <button
-                  onClick={() => openEdit(b)}
-                  className="px-2.5 py-1 text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 rounded-md transition-colors flex items-center gap-1 text-[11px] font-medium border border-slate-200"
-                >
-                  <Edit2 size={12} />
-                  Edit
-                </button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -220,12 +296,51 @@ export default function BuildingsPage() {
             </h3>
 
             <form onSubmit={handleSubmit} className="space-y-3.5">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Kode Gedung</label>
+                  <select
+                    value={form.kode}
+                    onChange={(e) => {
+                      const kode = e.target.value;
+                      const isPutri = ['A', 'B', 'C', 'D', 'E'].includes(kode);
+                      setForm({
+                        ...form,
+                        kode,
+                        kategori: isPutri ? 'PUTRI' : 'PUTRA',
+                      });
+                    }}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-700 font-mono font-bold"
+                  >
+                    <option value="A">Gedung A (Putri)</option>
+                    <option value="B">Gedung B (Putri)</option>
+                    <option value="C">Gedung C (Putri)</option>
+                    <option value="D">Gedung D (Putri)</option>
+                    <option value="E">Gedung E (Putri)</option>
+                    <option value="F">Gedung F (Putra)</option>
+                    <option value="G">Gedung G (Putra)</option>
+                    <option value="H">Gedung H (Putra)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Kategori Asrama</label>
+                  <select
+                    value={form.kategori}
+                    onChange={(e) => setForm({ ...form, kategori: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-700 font-semibold"
+                  >
+                    <option value="PUTRI">♀ Asrama Putri (Cewek)</option>
+                    <option value="PUTRA">♂ Asrama Putra (Cowo)</option>
+                  </select>
+                </div>
+              </div>
+
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">Nama Gedung Asrama</label>
                 <input
                   type="text"
                   required
-                  placeholder="Contoh: Asrama Menara Hijau"
+                  placeholder="Contoh: RPX, Rusunawa, Hijau, Orange..."
                   value={form.nama}
                   onChange={(e) => setForm({ ...form, nama: e.target.value })}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-700"

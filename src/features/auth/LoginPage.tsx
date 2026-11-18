@@ -63,9 +63,22 @@ export default function LoginPage() {
       const path = getRolePath(res.user.role);
       navigate(path + '/dashboard', { replace: true });
     } catch (err: any) {
-      const msg =
-        err?.response?.data?.message ||
-        'Kredensial tidak valid. Silakan coba lagi.';
+      const resData = err?.response?.data;
+      let msg = 'Kredensial tidak valid. Silakan coba lagi.';
+      if (typeof resData?.message === 'string') {
+        msg = resData.message;
+      } else if (Array.isArray(resData?.message)) {
+        msg = resData.message.join(', ');
+      } else if (resData?.message && typeof resData.message === 'object') {
+        msg =
+          (typeof resData.message.message === 'string' ? resData.message.message : '') ||
+          (typeof resData.message.error === 'string' ? resData.message.error : '') ||
+          'Kredensial tidak valid. Silakan coba lagi.';
+      } else if (typeof resData?.error === 'string') {
+        msg = resData.error;
+      } else if (typeof err?.message === 'string') {
+        msg = err.message;
+      }
       setError(msg);
     } finally {
       setIsLoading(false);
@@ -188,17 +201,21 @@ export default function LoginPage() {
               <div className="left-bottom">
                 <div className="left-bottom-left">
                   <div className="gedung-badges">
-                    <span className="gedung-badge ga">GA</span>
-                    <span className="gedung-badge gb">GB</span>
-                    <span className="gedung-badge gc">GC</span>
-                    <span className="gedung-badge gd">GD</span>
+                    <span className="gedung-badge ga" title="Gedung A (RPX) - Putri">GA</span>
+                    <span className="gedung-badge gb" title="Gedung B (Rusunawa) - Putri">GB</span>
+                    <span className="gedung-badge gc" title="Gedung C (PUPERA C) - Putri">GC</span>
+                    <span className="gedung-badge gd" title="Gedung D (Menpera) - Putri">GD</span>
+                    <span className="gedung-badge ge" title="Gedung E (Roesma M. Sjaaf) - Putri">GE</span>
+                    <span className="gedung-badge gf" title="Gedung F (Orange) - Putra">GF</span>
+                    <span className="gedung-badge gg" title="Gedung G (Hijau) - Putra">GG</span>
+                    <span className="gedung-badge gh" title="Gedung H (PUPERA H) - Putra">GH</span>
                   </div>
                   <div className="gedung-info">
                     <span className="gedung-info-title">
-                      4 Kompleks Asrama Mahasiswa
+                      8 Kompleks Asrama (A–H)
                     </span>
                     <span className="gedung-info-sub">
-                      Kampus Limau Manis, Padang
+                      5 Asrama Putri (A–E) &bull; 3 Asrama Putra (F–H)
                     </span>
                   </div>
                 </div>
@@ -270,7 +287,11 @@ export default function LoginPage() {
               {error && (
                 <div className="login-error animate-fade-in">
                   <AlertCircle size={14} />
-                  <span>{error}</span>
+                  <span>
+                    {typeof error === 'string'
+                      ? error
+                      : (error as any)?.message || JSON.stringify(error)}
+                  </span>
                 </div>
               )}
 
