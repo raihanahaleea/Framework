@@ -1,0 +1,321 @@
+/* ========================================================
+   AUDIT TRAIL & LOGS STYLES
+   SIPRESMA - UPT Asrama Mahasiswa Universitas Andalas
+   ======================================================== */
+
+.audit-page {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  max-width: 1240px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ===== Header Banner ===== */
+.audit-banner {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 24px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  position: relative;
+  overflow: hidden;
+}
+
+.audit-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 5px;
+  height: 100%;
+  background: linear-gradient(180deg, #065f46 0%, #047857 50%, #10b981 100%);
+  border-radius: 16px 0 0 16px;
+}
+
+.audit-banner-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.audit-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #047857;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: #ecfdf5;
+  padding: 5px 12px;
+  border-radius: 7px;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.audit-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: 0;
+  margin: 0;
+  line-height: 1.35;
+}
+
+.audit-subtitle {
+  font-size: 13.5px;
+  color: #475569;
+  margin: 6px 0 0 0;
+  line-height: 1.65;
+  letter-spacing: 0.01em;
+}
+
+/* ===== Search Wrapper ===== */
+.audit-search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.audit-search-icon {
+  position: absolute;
+  left: 14px;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.audit-search-input {
+  width: 100%;
+  padding: 10px 14px 10px 40px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 13px;
+  letter-spacing: 0.015em;
+  color: #0f172a;
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.audit-search-input:focus {
+  border-color: #047857;
+  box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.1);
+}
+
+/* ===== Table Card ===== */
+.audit-table-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.audit-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  letter-spacing: 0.01em;
+}
+
+.audit-table thead {
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.audit-table th {
+  padding: 14px 18px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.audit-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+  vertical-align: middle;
+  line-height: 1.5;
+}
+
+.audit-table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.audit-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.audit-actor-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  color: #334155;
+  font-weight: 700;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.btn-audit-detail {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.015em;
+  color: #047857;
+  background: #ecfdf5;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  padding: 5px 12px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-audit-detail:hover {
+  background: #047857;
+  color: #ffffff;
+}
+
+/* Pagination */
+.audit-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 22px;
+  border-top: 1px solid #e2e8f0;
+  background: #ffffff;
+  font-size: 13px;
+  letter-spacing: 0.01em;
+  color: #64748b;
+}
+
+.audit-page-btn {
+  padding: 7px 16px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.015em;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.audit-page-btn:hover:not(:disabled) {
+  background: #f8fafc;
+  border-color: #047857;
+  color: #047857;
+}
+
+.audit-page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Empty State */
+.audit-empty-state {
+  padding: 64px 24px;
+  text-align: center;
+}
+
+.audit-empty-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+  letter-spacing: 0.01em;
+  line-height: 1.6;
+  margin-top: 12px;
+}
+
+.audit-empty-desc {
+  font-size: 13.5px;
+  color: #64748b;
+  letter-spacing: 0.015em;
+  line-height: 1.6;
+  margin-top: 6px;
+}
+
+/* Modal */
+.audit-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.audit-modal-card {
+  background: #ffffff;
+  border-radius: 18px;
+  max-width: 480px;
+  width: 100%;
+  padding: 24px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.audit-modal-title {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #0f172a;
+  margin: 0 0 16px 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.audit-modal-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 0;
+  border-bottom: 1px solid #f8fafc;
+  font-size: 13px;
+}
+
+.audit-modal-label {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.audit-modal-val {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.btn-audit-modal-close {
+  width: 100%;
+  margin-top: 18px;
+  padding: 10px 16px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-audit-modal-close:hover {
+  background: #e2e8f0;
+}

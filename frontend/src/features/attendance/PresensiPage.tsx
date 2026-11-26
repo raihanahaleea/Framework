@@ -634,12 +634,12 @@ export default function PresensiPage() {
                       {!isSelectedSessionInSchedule
                         ? `Presensi ${activeSessionConfig.nama} belum aktif (Jadwal: ${activeSessionConfig.jamMulai}–${activeSessionConfig.jamSelesai} WIB). Kamera dinonaktifkan.`
                         : gpsStatus === 'OUT_OF_BOUNDS'
-                        ? `Anda berada di luar radius ${targetLocationName} (${distance !== null ? distance + ' m' : '...'}, batas: ${maxRadiusMeters} m). Kamera dinonaktifkan.`
-                        : gpsStatus === 'LOW_ACCURACY'
-                        ? `Akurasi sinyal GPS perangkat terlalu rendah (±${coords?.accuracy} m, toleransi: ≤ ${maxAccuracyMeters} m). Kamera dinonaktifkan.`
-                        : gpsStatus === 'DENIED'
-                        ? 'Izin akses lokasi ditolak. Silakan izinkan akses GPS pada browser.'
-                        : 'Kamera belum aktif. Menunggu validasi lokasi GPS...'}
+                          ? `Anda berada di luar radius ${targetLocationName} (${distance !== null ? distance + ' m' : '...'}, batas: ${maxRadiusMeters} m). Kamera dinonaktifkan.`
+                          : gpsStatus === 'LOW_ACCURACY'
+                            ? `Akurasi sinyal GPS perangkat terlalu rendah (±${coords?.accuracy} m, toleransi: ≤ ${maxAccuracyMeters} m). Kamera dinonaktifkan.`
+                            : gpsStatus === 'DENIED'
+                              ? 'Izin akses lokasi ditolak. Silakan izinkan akses GPS pada browser.'
+                              : 'Kamera belum aktif. Menunggu validasi lokasi GPS...'}
                     </p>
                     {isLocationValid && isSelectedSessionInSchedule && !isSelectedSessionDone && (
                       <button
@@ -692,13 +692,12 @@ export default function PresensiPage() {
               <div className="gps-panel-container">
                 {/* Status Bar */}
                 <div
-                  className={`gps-status-card ${
-                    gpsStatus === 'VALID'
-                      ? 'valid'
-                      : gpsStatus === 'OUT_OF_BOUNDS' || gpsStatus === 'DENIED' || gpsStatus === 'LOW_ACCURACY'
+                  className={`gps-status-card ${gpsStatus === 'VALID'
+                    ? 'valid'
+                    : gpsStatus === 'OUT_OF_BOUNDS' || gpsStatus === 'DENIED' || gpsStatus === 'LOW_ACCURACY'
                       ? 'invalid'
                       : 'warning'
-                  }`}
+                    }`}
                 >
                   <div className="gps-status-header">
                     <div className="gps-status-row">
@@ -707,22 +706,21 @@ export default function PresensiPage() {
                         {gpsStatus === 'VALID'
                           ? `Lokasi Valid (Dalam Radius ${targetLocationName})`
                           : gpsStatus === 'OUT_OF_BOUNDS'
-                          ? `Lokasi Ditolak: Di Luar Radius ${targetLocationName}`
-                          : gpsStatus === 'LOW_ACCURACY'
-                          ? 'Lokasi Ditolak: Akurasi GPS Terlalu Rendah'
-                          : gpsStatus === 'DENIED'
-                          ? 'Akses GPS Ditolak'
-                          : 'Mendeteksi Koordinat GPS...'}
+                            ? `Lokasi Ditolak: Di Luar Radius ${targetLocationName}`
+                            : gpsStatus === 'LOW_ACCURACY'
+                              ? 'Lokasi Ditolak: Akurasi GPS Terlalu Rendah'
+                              : gpsStatus === 'DENIED'
+                                ? 'Akses GPS Ditolak'
+                                : 'Mendeteksi Koordinat GPS...'}
                       </span>
                     </div>
                     <span
-                      className={`gps-pill ${
-                        gpsStatus === 'VALID'
-                          ? 'valid'
-                          : gpsStatus === 'OUT_OF_BOUNDS' || gpsStatus === 'DENIED' || gpsStatus === 'LOW_ACCURACY'
+                      className={`gps-pill ${gpsStatus === 'VALID'
+                        ? 'valid'
+                        : gpsStatus === 'OUT_OF_BOUNDS' || gpsStatus === 'DENIED' || gpsStatus === 'LOW_ACCURACY'
                           ? 'invalid'
                           : 'warning'
-                      }`}
+                        }`}
                     >
                       {gpsStatus === 'VALID' ? 'LOKASI VALID' : 'DITOLAK'}
                     </span>
@@ -733,16 +731,14 @@ export default function PresensiPage() {
                 <div className="gps-metrics-grid">
                   {/* Card 1: Jarak Sebenarnya ke Titik Pusat Lokasi Terpilih */}
                   <div
-                    className={`metric-card ${
-                      distance !== null && distance <= maxRadiusMeters ? 'metric-valid' : 'metric-invalid'
-                    }`}
+                    className={`metric-card ${distance !== null && distance <= maxRadiusMeters ? 'metric-valid' : 'metric-invalid'
+                      }`}
                   >
                     <div className="metric-header">
                       <span className="metric-title">Jarak ke {selectedSession === 'SUBUH' ? 'Masjid MNI' : 'Asrama'}</span>
                       <span
-                        className={`metric-badge ${
-                          distance !== null && distance <= maxRadiusMeters ? 'badge-ok' : 'badge-bad'
-                        }`}
+                        className={`metric-badge ${distance !== null && distance <= maxRadiusMeters ? 'badge-ok' : 'badge-bad'
+                          }`}
                       >
                         {distance !== null && distance <= maxRadiusMeters ? 'Dalam Radius' : 'Di Luar Radius'}
                       </span>
@@ -760,16 +756,14 @@ export default function PresensiPage() {
 
                   {/* Card 2: Akurasi Sinyal GPS Perangkat */}
                   <div
-                    className={`metric-card ${
-                      coords && coords.accuracy <= maxAccuracyMeters ? 'metric-valid' : 'metric-warn'
-                    }`}
+                    className={`metric-card ${coords && coords.accuracy <= maxAccuracyMeters ? 'metric-valid' : 'metric-warn'
+                      }`}
                   >
                     <div className="metric-header">
                       <span className="metric-title">Akurasi Sinyal GPS</span>
                       <span
-                        className={`metric-badge ${
-                          coords && coords.accuracy <= maxAccuracyMeters ? 'badge-ok' : 'badge-warn'
-                        }`}
+                        className={`metric-badge ${coords && coords.accuracy <= maxAccuracyMeters ? 'badge-ok' : 'badge-warn'
+                          }`}
                       >
                         {coords && coords.accuracy <= maxAccuracyMeters ? 'Akurat' : 'Akurasi Rendah'}
                       </span>
@@ -996,8 +990,8 @@ export default function PresensiPage() {
                     {gpsStatus === 'DENIED'
                       ? 'Izin GPS ditolak. Harap izinkan akses lokasi browser.'
                       : gpsStatus === 'LOW_ACCURACY'
-                      ? `Akurasi sinyal GPS terlalu rendah (±${coords?.accuracy}m, toleransi: ≤ ${maxAccuracyMeters}m).`
-                      : `Lokasi Anda di luar radius ${targetLocationName} (Jarak: ${distance !== null ? distance + 'm' : '...'}, batas: ${maxRadiusMeters}m).`}
+                        ? `Akurasi sinyal GPS terlalu rendah (±${coords?.accuracy}m, toleransi: ≤ ${maxAccuracyMeters}m).`
+                        : `Lokasi Anda di luar radius ${targetLocationName} (Jarak: ${distance !== null ? distance + 'm' : '...'}, batas: ${maxRadiusMeters}m).`}
                   </p>
                 )}
                 {isLocationValid && !photoBlob && (

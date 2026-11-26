@@ -426,6 +426,20 @@ export class PresensiService {
     if (query?.jenisPresensi) {
       where.keterangan = { contains: `[${query.jenisPresensi.toUpperCase()}]` };
     }
+    if (query?.tanggalMulai) {
+      where.tanggal = { ...where.tanggal, gte: new Date(query.tanggalMulai) };
+    }
+    if (query?.tanggalSelesai) {
+      where.tanggal = { ...where.tanggal, lte: new Date(query.tanggalSelesai) };
+    }
+    if (query?.search) {
+      where.user = {
+        OR: [
+          { name: { contains: query.search, mode: 'insensitive' } },
+          { nim: { contains: query.search, mode: 'insensitive' } },
+        ],
+      };
+    }
 
     const [total, list] = await Promise.all([
       this.prisma.presensi.count({ where }),
