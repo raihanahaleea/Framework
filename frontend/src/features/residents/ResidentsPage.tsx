@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Users, Plus, Search, Edit2, Power } from 'lucide-react';
+import {
+  Users, Plus, Search, Edit2, Power, ShieldCheck,
+  Building2, DoorOpen, X
+} from 'lucide-react';
 import api from '../../lib/api';
 import { toast } from 'sonner';
 import type { User, PaginatedResponse, Gedung, Kamar } from '../../types';
+import './ResidentsPage.css';
 
 export default function ResidentsPage() {
   const [data, setData] = useState<User[]>([]);
@@ -127,202 +131,227 @@ export default function ResidentsPage() {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-slate-200">
-        <div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <Users size={20} className="text-emerald-800" />
-            Data Penghuni Asrama
-          </h1>
-          <p className="text-xs text-slate-500 mt-0.5">Kelola identitas, NIM, dan penempatan kamar warga asrama</p>
+    <div className="res-page animate-fade-in">
+      {/* ===== Header Banner ===== */}
+      <div className="res-banner">
+        <div className="res-banner-left">
+          <div className="res-badge">
+            <ShieldCheck size={14} />
+            Data Warga • UPT Asrama Mahasiswa UNAND
+          </div>
+          <h1 className="res-title">Data &amp; Penempatan Penghuni Asrama</h1>
+          <p className="res-subtitle">
+            Kelola data identitas warga asrama, nomor induk mahasiswa (NIM), penempatan hunian gedung &amp; kamar, serta status keaktifan akun.
+          </p>
         </div>
-        <button
-          onClick={openCreate}
-          className="flex items-center gap-2 px-3.5 py-2 bg-emerald-800 hover:bg-emerald-700 text-white font-semibold rounded-lg text-xs shadow-xs hover:shadow transition-all self-start sm:self-auto"
-        >
-          <Plus size={16} />
-          Tambah Penghuni
-        </button>
+        <div className="res-banner-right">
+          <button
+            onClick={openCreate}
+            className="btn-tambah-penghuni"
+          >
+            <Plus size={16} />
+            <span>Tambah Penghuni</span>
+          </button>
+        </div>
       </div>
 
-      {/* Search */}
-      <div className="relative">
-        <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+      {/* ===== Search Input ===== */}
+      <div className="res-search-wrapper">
+        <Search size={16} className="res-search-icon" />
         <input
           type="text"
-          placeholder="Cari berdasarkan nama, NIM, atau email..."
+          placeholder="Cari berdasarkan nama lengkap penghuni, NIM, atau alamat email..."
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
             setMeta((m) => ({ ...m, page: 1 }));
           }}
-          className="w-full pl-9 pr-3.5 py-2 bg-white border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-700"
+          className="res-search-input"
         />
       </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-xl border border-slate-200/90 shadow-2xs overflow-hidden">
+      {/* ===== Table Card ===== */}
+      <div className="res-table-card">
         {loading ? (
-          <div className="p-6 space-y-2.5">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-10 skeleton rounded-lg" />
+          <div className="p-6 space-y-3">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="h-11 skeleton rounded-lg" />
             ))}
           </div>
         ) : data.length === 0 ? (
-          <div className="text-center py-12 text-slate-400">
-            <Users size={40} className="mx-auto mb-2 opacity-30" />
-            <p className="text-xs font-medium">Tidak ada data penghuni ditemukan</p>
+          <div className="text-center py-14 text-slate-400">
+            <Users size={44} className="mx-auto mb-2 opacity-30 text-emerald-700" />
+            <p className="text-xs font-semibold text-slate-700">Tidak ada data penghuni ditemukan</p>
+            <p className="text-[11px] text-slate-400 mt-0.5">Coba ubah kata kunci pencarian Anda.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-xs">
-              <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 font-semibold uppercase text-[10px] tracking-wider">
+            <table className="res-table">
+              <thead>
                 <tr>
-                  <th className="text-left py-3 px-4">Nama Penghuni</th>
-                  <th className="text-left py-3 px-4">NIM</th>
-                  <th className="text-left py-3 px-4">Gedung & Kamar</th>
-                  <th className="text-left py-3 px-4">Asal Daerah</th>
-                  <th className="text-left py-3 px-4">Status Akun</th>
-                  <th className="text-right py-3 px-4">Aksi</th>
+                  <th>Nama Penghuni</th>
+                  <th>NIM</th>
+                  <th>Gedung &amp; Kamar</th>
+                  <th>Asal Daerah</th>
+                  <th>Status Akun</th>
+                  <th style={{ textAlign: 'right' }}>Aksi</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
-                {data.map((u) => (
-                  <tr key={u.id} className="hover:bg-slate-50/60 transition-colors">
-                    <td className="py-3 px-4 font-semibold text-slate-900">
-                      <div>
-                        <p>{u.name}</p>
-                        <p className="text-[11px] text-slate-400 font-normal">{u.email}</p>
-                      </div>
-                    </td>
-                    <td className="py-3 px-4 font-mono font-medium text-slate-700">{u.nim || '-'}</td>
-                    <td className="py-3 px-4">
-                      <p className="font-medium text-slate-800">{u.gedung?.nama || '-'}</p>
-                      <p className="text-[11px] text-slate-400">{u.kamar?.nama || '-'}</p>
-                    </td>
-                    <td className="py-3 px-4 text-slate-600">{u.asal || '-'}</td>
-                    <td className="py-3 px-4">
-                      <span className={`badge ${u.isActive ? 'badge-hadir' : 'badge-alpa'}`}>
-                        {u.isActive ? 'Aktif' : 'Nonaktif'}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-right">
-                      <div className="inline-flex items-center gap-1.5">
-                        <button
-                          onClick={() => toggleStatus(u)}
-                          className={`p-1 rounded text-xs font-medium transition-colors ${
-                            u.isActive ? 'text-red-700 hover:bg-red-50' : 'text-emerald-800 hover:bg-emerald-50'
-                          }`}
-                          title={u.isActive ? 'Nonaktifkan' : 'Aktifkan'}
-                        >
-                          <Power size={13} />
-                        </button>
-                        <button
-                          onClick={() => openEdit(u)}
-                          className="p-1 text-slate-500 hover:text-emerald-800 hover:bg-emerald-50 rounded transition-colors"
-                          title="Edit Penghuni"
-                        >
-                          <Edit2 size={13} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+              <tbody>
+                {data.map((u) => {
+                  const userInitial = u.name ? u.name.charAt(0).toUpperCase() : 'U';
+
+                  return (
+                    <tr key={u.id}>
+                      <td>
+                        <div className="res-user-cell">
+                          <div className="res-avatar">{userInitial}</div>
+                          <div>
+                            <p className="font-semibold text-slate-900">{u.name}</p>
+                            <p className="text-[11px] text-slate-400 font-normal">{u.email}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="font-mono font-medium text-slate-800">{u.nim || '-'}</td>
+                      <td>
+                        <div className="flex flex-col">
+                          <span className="font-semibold text-slate-800 flex items-center gap-1">
+                            <Building2 size={12} className="text-emerald-700" />
+                            {u.gedung?.nama || '-'}
+                          </span>
+                          <span className="text-[11px] text-slate-400 flex items-center gap-1">
+                            <DoorOpen size={11} className="text-slate-400" />
+                            {u.kamar?.nama || '-'}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="text-slate-600">{u.asal || '-'}</td>
+                      <td>
+                        <span className={`badge ${u.isActive ? 'badge-hadir' : 'badge-alpa'}`}>
+                          {u.isActive ? 'Aktif' : 'Nonaktif'}
+                        </span>
+                      </td>
+                      <td style={{ textAlign: 'right' }}>
+                        <div className="inline-flex items-center gap-1.5">
+                          <button
+                            onClick={() => toggleStatus(u)}
+                            className={`res-action-btn ${u.isActive ? 'res-action-power-on' : 'res-action-power-off'}`}
+                            title={u.isActive ? 'Nonaktifkan Akun' : 'Aktifkan Akun'}
+                          >
+                            <Power size={13} />
+                          </button>
+                          <button
+                            onClick={() => openEdit(u)}
+                            className="res-action-btn res-action-edit"
+                            title="Edit Data Penghuni"
+                          >
+                            <Edit2 size={13} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         )}
 
         {meta.totalPages > 1 && (
-          <div className="flex items-center justify-between p-3.5 border-t border-slate-100 text-xs text-slate-500">
+          <div className="res-pagination">
             <span>
-              Halaman {meta.page} dari {meta.totalPages} ({meta.total} warga)
+              Halaman <strong>{meta.page}</strong> dari <strong>{meta.totalPages}</strong> ({meta.total} warga terdaftar)
             </span>
-            <div className="flex gap-2">
+            <div className="res-page-btns">
               <button
                 onClick={() => setMeta((m) => ({ ...m, page: m.page - 1 }))}
                 disabled={meta.page <= 1}
-                className="px-2.5 py-1 border border-slate-200 rounded text-xs disabled:opacity-50 hover:bg-slate-50"
+                className="res-page-btn"
               >
-                Sebelumnya
+                &larr; Sebelumnya
               </button>
               <button
                 onClick={() => setMeta((m) => ({ ...m, page: m.page + 1 }))}
                 disabled={meta.page >= meta.totalPages}
-                className="px-2.5 py-1 border border-slate-200 rounded text-xs disabled:opacity-50 hover:bg-slate-50"
+                className="res-page-btn"
               >
-                Selanjutnya
+                Selanjutnya &rarr;
               </button>
             </div>
           </div>
         )}
       </div>
 
-      {/* Modal Form */}
+      {/* ===== Modal Form Tambah / Edit ===== */}
       {showModal && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-2xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl max-w-lg w-full p-6 animate-fade-in shadow-xl border border-slate-200">
-            <h3 className="text-base font-bold text-slate-900 mb-3 pb-2 border-b border-slate-100">
-              {editUser ? 'Edit Data Penghuni' : 'Tambah Penghuni Baru'}
-            </h3>
+        <div className="res-modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="res-modal-card animate-fade-in" onClick={(e) => e.stopPropagation()}>
+            <div className="res-modal-header">
+              <h3 className="res-modal-title">
+                {editUser ? 'Edit Data Penghuni' : 'Tambah Penghuni Asrama Baru'}
+              </h3>
+              <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-700">
+                <X size={18} />
+              </button>
+            </div>
 
             <form onSubmit={handleSubmit} className="space-y-3.5">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap</label>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap</label>
                   <input
                     type="text"
                     required
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-700"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:bg-white focus:outline-none focus:border-emerald-700"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">NIM</label>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">NIM</label>
                   <input
                     type="text"
                     required
                     value={form.nim}
                     onChange={(e) => setForm({ ...form, nim: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-700 font-mono"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:bg-white focus:outline-none focus:border-emerald-700 font-mono"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Email Resmi</label>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Alamat Email Resmi</label>
                   <input
                     type="email"
                     required
                     value={form.email}
                     onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-700"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:bg-white focus:outline-none focus:border-emerald-700"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Asal Daerah</label>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Asal Daerah</label>
                   <input
                     type="text"
                     value={form.asal}
                     onChange={(e) => setForm({ ...form, asal: e.target.value })}
                     placeholder="Contoh: Bukittinggi"
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-700"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:bg-white focus:outline-none focus:border-emerald-700"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Gedung Asrama</label>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Gedung Asrama</label>
                   <select
                     value={form.gedungId}
                     onChange={(e) => {
                       setForm({ ...form, gedungId: e.target.value, kamarId: '' });
                       if (e.target.value) loadRooms(e.target.value);
                     }}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-700"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:bg-white focus:outline-none focus:border-emerald-700"
                   >
                     <option value="">Pilih Gedung...</option>
                     {buildings.map((b) => (
@@ -333,11 +362,11 @@ export default function ResidentsPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Kamar Asrama</label>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Kamar Asrama</label>
                   <select
                     value={form.kamarId}
                     onChange={(e) => setForm({ ...form, kamarId: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-700"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:bg-white focus:outline-none focus:border-emerald-700"
                   >
                     <option value="">Pilih Kamar...</option>
                     {rooms.map((r) => (
@@ -349,18 +378,18 @@ export default function ResidentsPage() {
                 </div>
               </div>
 
-              <div className="flex gap-2 pt-3 border-t border-slate-100">
+              <div className="flex gap-2.5 pt-3 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="flex-1 py-2 border border-slate-300 text-slate-700 rounded-lg font-medium text-xs hover:bg-slate-50 transition-colors"
+                  className="flex-1 py-2 border border-slate-300 text-slate-700 rounded-xl font-semibold text-xs hover:bg-slate-50 transition-colors"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="flex-1 py-2 bg-emerald-800 hover:bg-emerald-700 text-white rounded-lg font-semibold text-xs shadow-xs transition-all disabled:opacity-50"
+                  className="flex-1 py-2 bg-emerald-800 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-xs transition-all disabled:opacity-50"
                 >
                   {submitting ? 'Menyimpan...' : 'Simpan Data'}
                 </button>

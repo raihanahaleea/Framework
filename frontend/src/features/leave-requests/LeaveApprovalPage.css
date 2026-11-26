@@ -1,0 +1,430 @@
+/* ========================================================
+   LEAVE APPROVAL (PERSETUJUAN IZIN) STYLES
+   SIPRESMA - UPT Asrama Mahasiswa Universitas Andalas
+   ======================================================== */
+
+.lapp-page {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  max-width: 1240px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ===== Header Banner ===== */
+.lapp-banner {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 24px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  position: relative;
+  overflow: hidden;
+}
+
+.lapp-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 5px;
+  height: 100%;
+  background: linear-gradient(180deg, #065f46 0%, #047857 50%, #10b981 100%);
+  border-radius: 16px 0 0 16px;
+}
+
+.lapp-banner-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.lapp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #047857;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: #ecfdf5;
+  padding: 5px 12px;
+  border-radius: 7px;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.lapp-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: 0;
+  margin: 0;
+  line-height: 1.35;
+}
+
+.lapp-subtitle {
+  font-size: 13.5px;
+  color: #475569;
+  margin: 6px 0 0 0;
+  line-height: 1.65;
+  letter-spacing: 0.01em;
+}
+
+/* ===== Filter Tabs Bar ===== */
+.lapp-tabs-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 2px;
+  overflow-x: auto;
+}
+
+.lapp-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 18px;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: 0.015em;
+  color: #64748b;
+  background: transparent;
+  border: none;
+  border-bottom: 2.5px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.lapp-tab-btn:hover {
+  color: #047857;
+}
+
+.lapp-tab-btn.active {
+  color: #047857;
+  font-weight: 700;
+  border-bottom-color: #047857;
+}
+
+.lapp-tab-count {
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #64748b;
+  letter-spacing: 0.02em;
+}
+
+.lapp-tab-btn.active .lapp-tab-count {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+/* ===== Leave Request Cards Container ===== */
+.lapp-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Empty State in Leave Approval */
+.lapp-list-container > .bg-white.text-center {
+  padding: 64px 24px !important;
+  border-radius: 16px !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.lapp-list-container > .bg-white.text-center p.text-xs {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: #1e293b !important;
+  letter-spacing: 0.01em !important;
+  line-height: 1.6 !important;
+  margin-top: 12px !important;
+}
+
+.lapp-list-container > .bg-white.text-center p.text-\[11px\] {
+  font-size: 13.5px !important;
+  color: #64748b !important;
+  letter-spacing: 0.015em !important;
+  line-height: 1.6 !important;
+  margin-top: 6px !important;
+}
+
+.lapp-item-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 22px 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: all 0.15s ease;
+}
+
+.lapp-item-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.lapp-item-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.lapp-user-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.lapp-user-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.lapp-user-name {
+  font-size: 15.5px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: 0.005em;
+  line-height: 1.4;
+}
+
+.lapp-user-nim {
+  font-size: 12.5px;
+  color: #64748b;
+  font-family: inherit;
+  letter-spacing: 0.02em;
+  margin-top: 2px;
+}
+
+.lapp-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  background: #f8fafc;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid #f1f5f9;
+}
+
+.lapp-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #334155;
+  letter-spacing: 0.01em;
+  line-height: 1.5;
+}
+
+.lapp-meta-label {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.lapp-meta-val {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.lapp-reason-box {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 13px;
+}
+
+.lapp-reason-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #64748b;
+  margin-bottom: 4px;
+  letter-spacing: 0.05em;
+}
+
+.lapp-reason-text {
+  color: #334155;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+
+.lapp-catatan-box {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 12.5px;
+  letter-spacing: 0.01em;
+  color: #065f46;
+  line-height: 1.5;
+}
+
+.lapp-catatan-box.ditolak {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #991b1b;
+}
+
+.lapp-item-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.btn-lapp-detail {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: #ffffff;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.015em;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-lapp-detail:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+}
+
+.btn-lapp-tolak {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  border-radius: 9px;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.015em;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-lapp-tolak:hover {
+  background: #fee2e2;
+  border-color: #f87171;
+}
+
+.btn-lapp-setujui {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  background: #047857;
+  color: #ffffff;
+  border: 1px solid #047857;
+  border-radius: 9px;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.015em;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 3px rgba(4, 120, 87, 0.2);
+}
+
+.btn-lapp-setujui:hover {
+  background: #065f46;
+}
+
+/* Modals */
+.lapp-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.lapp-modal-card {
+  background: #ffffff;
+  border-radius: 18px;
+  max-width: 460px;
+  width: 100%;
+  padding: 24px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.lapp-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.lapp-modal-title {
+  font-size: 15.5px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #0f172a;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .lapp-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .lapp-item-top {
+    flex-direction: column;
+  }
+  .lapp-meta-grid {
+    grid-template-columns: 1fr;
+  }
+  .lapp-item-actions {
+    flex-wrap: wrap;
+    justify-content: stretch;
+  }
+  .lapp-item-actions button {
+    flex: 1;
+    justify-content: center;
+  }
+}

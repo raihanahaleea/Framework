@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { DoorOpen, Plus, Edit2, Power, Search, Loader2 } from 'lucide-react';
+import { DoorOpen, Plus, Edit2, Power, Search, Loader2, ShieldCheck } from 'lucide-react';
 import api from '../../lib/api';
 import { toast } from 'sonner';
 import type { Kamar, Gedung } from '../../types';
+import './RoomsPage.css';
 
 export default function RoomsPage() {
   const [rooms, setRooms] = useState<Kamar[]>([]);
@@ -119,34 +120,37 @@ export default function RoomsPage() {
   const filtered = rooms.filter((r) => r.nama.toLowerCase().includes(search.toLowerCase()));
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-slate-200">
-        <div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <DoorOpen size={20} className="text-emerald-800" />
-            Data Kamar Asrama
-          </h1>
-          <p className="text-xs text-slate-500 mt-0.5">Kelola alokasi unit kamar, daya tampung, dan lantai per gedung</p>
+    <div className="rooms-page animate-fade-in">
+      {/* ===== Header Banner ===== */}
+      <div className="rooms-banner">
+        <div className="rooms-banner-left">
+          <div className="rooms-badge">
+            <ShieldCheck size={14} />
+            Panel Administrator • Manajemen Hunian
+          </div>
+          <h1 className="rooms-title">Data Kamar Asrama</h1>
+          <p className="rooms-subtitle">
+            Kelola alokasi unit kamar hunian, daya tampung kapasitas warga, dan penempatan lantai per gedung asrama.
+          </p>
         </div>
-        <button
-          onClick={openCreate}
-          className="flex items-center gap-2 px-3.5 py-2 bg-emerald-800 hover:bg-emerald-700 text-white font-semibold rounded-lg text-xs shadow-xs hover:shadow transition-all self-start sm:self-auto"
-        >
-          <Plus size={16} />
-          Tambah Kamar
-        </button>
+        <div className="rooms-banner-right">
+          <button onClick={openCreate} className="btn-tambah-kamar">
+            <Plus size={16} />
+            <span>Tambah Kamar</span>
+          </button>
+        </div>
       </div>
 
-      {/* Filters & Search */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div className="relative">
-          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+      {/* ===== Filters & Search Toolbar ===== */}
+      <div className="rooms-filter-toolbar">
+        <div className="rooms-search-box">
+          <Search size={16} className="rooms-search-icon" />
           <input
             type="text"
             placeholder="Cari unit kamar..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3.5 py-2 bg-white border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-700"
+            className="rooms-search-input"
           />
         </div>
 
@@ -154,7 +158,7 @@ export default function RoomsPage() {
           <select
             value={selectedBuilding}
             onChange={(e) => setSelectedBuilding(e.target.value)}
-            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-700 text-slate-700 font-medium"
+            className="rooms-select"
           >
             <option value="">Semua Gedung Asrama</option>
             {buildings.map((b) => (
@@ -165,86 +169,90 @@ export default function RoomsPage() {
           </select>
         </div>
 
-        <div className="bg-white px-3.5 py-2 border border-slate-200 rounded-lg text-xs flex items-center justify-between text-slate-600">
+        <div className="rooms-count-card">
           <span>Total Unit Kamar:</span>
-          <span className="font-bold text-slate-900">{filtered.length} Unit</span>
+          <span className="rooms-count-val">{filtered.length} Unit</span>
         </div>
       </div>
 
-      {/* Structured Table */}
-      <div className="bg-white rounded-xl border border-slate-200/90 shadow-2xs overflow-hidden">
+      {/* ===== Structured Table ===== */}
+      <div className="rooms-table-card">
         {loading ? (
-          <div className="p-6 space-y-2.5">
+          <div className="p-6 space-y-3">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-10 skeleton rounded-lg" />
+              <div key={i} className="h-11 skeleton rounded-lg" />
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="text-center py-12 text-slate-400">
-            <DoorOpen size={40} className="mx-auto mb-2 opacity-30" />
-            <p className="text-xs font-medium">Tidak ada data unit kamar ditemukan</p>
+          <div className="rooms-empty-state">
+            <DoorOpen size={44} className="mx-auto mb-2 opacity-30 text-emerald-800" />
+            <p className="rooms-empty-title">Tidak ada data unit kamar ditemukan</p>
+            <p className="rooms-empty-desc">Silakan sesuaikan pilihan gedung atau tambahkan unit kamar baru.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-xs">
-              <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 font-semibold uppercase text-[10px] tracking-wider">
+            <table className="rooms-table">
+              <thead>
                 <tr>
-                  <th className="text-left py-3 px-4">Nama Kamar</th>
-                  <th className="text-left py-3 px-4">Gedung</th>
-                  <th className="text-left py-3 px-4">Lantai</th>
-                  <th className="text-left py-3 px-4">Kapasitas Penghuni</th>
-                  <th className="text-left py-3 px-4">Status</th>
-                  <th className="text-right py-3 px-4">Aksi</th>
+                  <th>Nama Kamar</th>
+                  <th>Gedung</th>
+                  <th>Lantai</th>
+                  <th>Kapasitas Penghuni</th>
+                  <th>Status</th>
+                  <th style={{ textAlign: 'right' }}>Aksi</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
+              <tbody>
                 {filtered.map((r) => {
                   const occupied = r._count?.users ?? 0;
                   return (
-                    <tr key={r.id} className="hover:bg-slate-50/60 transition-colors">
-                      <td className="py-3 px-4 font-semibold text-slate-900 flex items-center gap-2">
-                        <DoorOpen size={14} className="text-emerald-800" />
-                        {r.nama}
+                    <tr key={r.id}>
+                      <td>
+                        <div className="room-name-wrapper">
+                          <div className="room-icon-badge">
+                            <DoorOpen size={16} />
+                          </div>
+                          <span className="room-name-text">{r.nama}</span>
+                        </div>
                       </td>
-                      <td className="py-3 px-4 text-slate-600">{r.gedung?.nama || '-'}</td>
-                      <td className="py-3 px-4 text-slate-600">Lantai {r.nomorLantai}</td>
-                      <td className="py-3 px-4">
-                        <div className="flex items-center gap-2">
-                          <span className="font-mono text-slate-800 font-medium">
+                      <td>{r.gedung?.nama || '-'}</td>
+                      <td>Lantai {r.nomorLantai}</td>
+                      <td>
+                        <div className="room-capacity-bar-wrapper">
+                          <span className="font-semibold text-slate-800 font-mono text-[12.5px]">
                             {occupied} / {r.kapasitas} org
                           </span>
-                          <div className="w-16 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                          <div className="room-capacity-track">
                             <div
-                              className={`h-full rounded-full ${
-                                occupied >= r.kapasitas ? 'bg-red-500' : 'bg-emerald-600'
-                              }`}
-                              style={{ width: `${Math.min(100, (occupied / r.kapasitas) * 100)}%` }}
+                              className="room-capacity-fill"
+                              style={{
+                                width: `${Math.min(100, (occupied / r.kapasitas) * 100)}%`,
+                                backgroundColor: occupied >= r.kapasitas ? '#ef4444' : '#047857'
+                              }}
                             />
                           </div>
                         </div>
                       </td>
-                      <td className="py-3 px-4">
+                      <td>
                         <span className={`badge ${r.isActive ? 'badge-hadir' : 'badge-alpa'}`}>
                           {r.isActive ? 'Aktif' : 'Nonaktif'}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-right">
-                        <div className="inline-flex items-center gap-1.5">
+                      <td style={{ textAlign: 'right' }}>
+                        <div className="inline-flex items-center gap-2">
                           <button
                             onClick={() => handleToggleStatus(r)}
-                            className={`p-1 rounded text-xs font-medium transition-colors ${
-                              r.isActive ? 'text-red-700 hover:bg-red-50' : 'text-emerald-800 hover:bg-emerald-50'
-                            }`}
-                            title={r.isActive ? 'Nonaktifkan' : 'Aktifkan'}
+                            className={`rooms-action-btn ${r.isActive ? 'btn-power-active' : 'btn-power-inactive'}`}
+                            title={r.isActive ? 'Nonaktifkan Kamar' : 'Aktifkan Kamar'}
                           >
-                            <Power size={13} />
+                            <Power size={14} />
                           </button>
                           <button
                             onClick={() => openEdit(r)}
-                            className="p-1 text-slate-500 hover:text-emerald-800 hover:bg-emerald-50 rounded transition-colors"
+                            className="rooms-action-btn btn-edit-fasil"
                             title="Edit Kamar"
                           >
-                            <Edit2 size={13} />
+                            <Edit2 size={14} />
                           </button>
                         </div>
                       </td>
@@ -259,20 +267,20 @@ export default function RoomsPage() {
 
       {/* Modal Tambah / Edit */}
       {showModal && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-2xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl max-w-sm w-full p-6 animate-fade-in shadow-xl border border-slate-200">
-            <h3 className="text-base font-bold text-slate-900 mb-3 pb-2 border-b border-slate-100">
+        <div className="rooms-modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="rooms-modal-card animate-fade-in" onClick={(e) => e.stopPropagation()}>
+            <h3 className="rooms-modal-title">
               {editingRoom ? 'Edit Data Kamar' : 'Tambah Kamar Baru'}
             </h3>
 
-            <form onSubmit={handleSubmit} className="space-y-3.5">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Gedung Asrama</label>
+                <label className="rooms-form-label">Gedung Asrama</label>
                 <select
                   required
                   value={form.gedungId}
                   onChange={(e) => setForm({ ...form, gedungId: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-700"
+                  className="rooms-form-select"
                 >
                   <option value="">Pilih Gedung...</option>
                   {buildings.map((b) => (
@@ -284,20 +292,20 @@ export default function RoomsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Nama / Nomor Kamar</label>
+                <label className="rooms-form-label">Nama / Nomor Kamar</label>
                 <input
                   type="text"
                   required
-                  placeholder="Contoh: Kamar 101"
+                  placeholder="Contoh: Kamar A-101"
                   value={form.nama}
                   onChange={(e) => setForm({ ...form, nama: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-700"
+                  className="rooms-form-input"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Nomor Lantai</label>
+                  <label className="rooms-form-label">Nomor Lantai</label>
                   <input
                     type="number"
                     min="1"
@@ -305,11 +313,11 @@ export default function RoomsPage() {
                     required
                     value={form.nomorLantai}
                     onChange={(e) => setForm({ ...form, nomorLantai: parseInt(e.target.value) || 1 })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-700"
+                    className="rooms-form-input"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Kapasitas (Orang)</label>
+                  <label className="rooms-form-label">Kapasitas (Orang)</label>
                   <input
                     type="number"
                     min="1"
@@ -317,23 +325,23 @@ export default function RoomsPage() {
                     required
                     value={form.kapasitas}
                     onChange={(e) => setForm({ ...form, kapasitas: parseInt(e.target.value) || 4 })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-700"
+                    className="rooms-form-input"
                   />
                 </div>
               </div>
 
-              <div className="flex gap-2 pt-3 border-t border-slate-100">
+              <div className="rooms-modal-actions">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="flex-1 py-2 border border-slate-300 text-slate-700 rounded-lg font-medium text-xs hover:bg-slate-50 transition-colors"
+                  className="btn-modal-cancel"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="flex-1 py-2 bg-emerald-800 hover:bg-emerald-700 text-white rounded-lg font-semibold text-xs shadow-xs transition-all disabled:opacity-50 flex items-center justify-center gap-1.5"
+                  className="btn-modal-submit flex items-center justify-center gap-1.5"
                 >
                   {submitting ? <Loader2 size={14} className="animate-spin" /> : 'Simpan Data'}
                 </button>

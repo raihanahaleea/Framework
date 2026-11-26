@@ -2,7 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import {
   LayoutDashboard, ClipboardCheck, History, FileText, FileClock,
-  UserCircle, LogOut, Users, Building2, DoorOpen, Settings,
+  UserCircle, LogOut, Users, DoorOpen, Settings,
   ScrollText, Menu, X, ChevronLeft
 } from 'lucide-react';
 import { useState } from 'react';
@@ -35,7 +35,6 @@ const adminNav: NavItem[] = [
   { label: 'Dashboard', path: '/admin/dashboard', icon: <LayoutDashboard size={18} /> },
   { label: 'Data Penghuni', path: '/admin/penghuni', icon: <Users size={18} /> },
   { label: 'Data Fasilitator', path: '/admin/fasil', icon: <Users size={18} /> },
-  { label: 'Gedung Asrama', path: '/admin/gedung', icon: <Building2 size={18} /> },
   { label: 'Kamar Asrama', path: '/admin/kamar', icon: <DoorOpen size={18} /> },
   { label: 'Data Presensi', path: '/admin/presensi', icon: <ClipboardCheck size={18} /> },
   { label: 'Persetujuan Izin', path: '/admin/pengajuan-izin', icon: <FileText size={18} /> },

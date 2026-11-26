@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
@@ -10,46 +9,120 @@ import {
   Loader2,
   Lock,
   Mail,
-  MapPin,
-  QrCode,
   Shield,
-  Activity,
-  Key,
   HelpCircle,
   ArrowRight,
   AlertCircle,
   CheckSquare,
   Square,
-  ExternalLink,
   Users,
   Building2,
+  Sparkles,
+  Home,
+  X,
+  Copy,
+  Check,
 } from 'lucide-react';
 
-type RoleTab = 'PENGHUNI' | 'FASIL' | 'ADMIN';
+export type RoleTab = 'PENGHUNI' | 'FASIL' | 'ADMIN';
+
+interface RoleConfig {
+  id: RoleTab;
+  tabLabel: string;
+  roleTitle: string;
+  portalBadge: string;
+  description: string;
+  icon: typeof Home;
+  emailPlaceholder: string;
+  defaultEmail: string;
+  defaultPassword: string;
+  submitLabel: string;
+}
+
+const ROLES: RoleConfig[] = [
+  {
+    id: 'PENGHUNI',
+    tabLabel: 'Penghuni',
+    roleTitle: 'Warga Asrama',
+    portalBadge: 'Portal Mahasiswa',
+    description: 'Catat presensi harian Subuh & Malam serta ajukan perizinan asrama dengan mudah dan cepat.',
+    icon: Home,
+    emailPlaceholder: 'penghuni@unand.ac.id',
+    defaultEmail: 'penghuni@unand.ac.id',
+    defaultPassword: '123456',
+    submitLabel: 'Masuk sebagai Penghuni',
+  },
+  {
+    id: 'FASIL',
+    tabLabel: 'Fasilitator',
+    roleTitle: 'Fasilitator Pembina',
+    portalBadge: 'Portal Pembina',
+    description: 'Pantau kehadiran warga binaan dan verifikasi permohonan izin asrama secara real-time.',
+    icon: Users,
+    emailPlaceholder: 'fasil@unand.ac.id',
+    defaultEmail: 'fasil@unand.ac.id',
+    defaultPassword: '123456',
+    submitLabel: 'Masuk sebagai Fasilitator',
+  },
+  {
+    id: 'ADMIN',
+    tabLabel: 'Admin',
+    roleTitle: 'Administrator Utama',
+    portalBadge: 'Panel Tata Kelola',
+    description: 'Pusat kendali operasional hunian, geofencing GPS, dan audit integritas sistem asrama.',
+    icon: Shield,
+    emailPlaceholder: 'admin@unand.ac.id',
+    defaultEmail: 'admin@unand.ac.id',
+    defaultPassword: '123456',
+    submitLabel: 'Masuk sebagai Admin',
+  },
+];
 
 export default function LoginPage() {
   const { login, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
+
+  const [activeRole, setActiveRole] = useState<RoleTab>('PENGHUNI');
+  const [slideDirection, setSlideDirection] = useState<'left' | 'right'>('right');
+
   const [identifier, setIdentifier] = useState('penghuni@unand.ac.id');
   const [password, setPassword] = useState('123456');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
-  const [activeRole, setActiveRole] = useState<RoleTab>('PENGHUNI');
 
-  const handleRoleSelect = (role: RoleTab) => {
-    setActiveRole(role);
-    if (role === 'PENGHUNI') {
-      setIdentifier('penghuni@unand.ac.id');
-      setPassword('123456');
-    } else if (role === 'FASIL') {
-      setIdentifier('fasil@unand.ac.id');
-      setPassword('123456');
-    } else if (role === 'ADMIN') {
-      setIdentifier('admin@unand.ac.id');
-      setPassword('123456');
+  const [showHelpPopover, setShowHelpPopover] = useState(false);
+  const [showForgotModal, setShowForgotModal] = useState(false);
+  const [copiedEmail, setCopiedEmail] = useState(false);
+
+  const currentRole = ROLES.find((r) => r.id === activeRole) || ROLES[0];
+  const roleIndex = ROLES.findIndex((r) => r.id === activeRole);
+
+  const handleRoleSelect = (newRole: RoleTab) => {
+    if (newRole === activeRole) return;
+    const currentIndex = ROLES.findIndex((r) => r.id === activeRole);
+    const targetIndex = ROLES.findIndex((r) => r.id === newRole);
+    setSlideDirection(targetIndex > currentIndex ? 'left' : 'right');
+    setActiveRole(newRole);
+
+    const targetConfig = ROLES[targetIndex];
+    if (targetConfig) {
+      setIdentifier(targetConfig.defaultEmail);
+      setPassword(targetConfig.defaultPassword);
     }
+  };
+
+  const handleFillDemo = () => {
+    setIdentifier(currentRole.defaultEmail);
+    setPassword(currentRole.defaultPassword);
+    setError('');
+  };
+
+  const handleCopyEmail = () => {
+    navigator.clipboard.writeText('asrama@unand.ac.id');
+    setCopiedEmail(true);
+    setTimeout(() => setCopiedEmail(false), 2000);
   };
 
   // If already authenticated, redirect
@@ -110,363 +183,304 @@ export default function LoginPage() {
     }
   };
 
+  const RoleIcon = currentRole.icon;
+
   return (
-    <div className="login-page">
-      {/* ===== NAVBAR ===== */}
-      <nav className="login-navbar">
-        <div className="login-navbar-inner">
-          <div className="navbar-left">
-            <div className="navbar-logo-icon">
-              <Building2 size={18} strokeWidth={2} />
+    <div className="glass-login-page">
+      {/* Ambient Glowing Orbs */}
+      <div className="glass-ambient-orb orb-emerald-1" />
+      <div className="glass-ambient-orb orb-gold" />
+      <div className="glass-ambient-orb orb-teal" />
+      <div className="glass-grid-overlay" />
+
+      {/* Main Split-Screen Card */}
+      <div className="glass-split-card">
+        {/* ========================================================
+            PANEL KIRI (45% lebar) — Visual Identitas & Peran Dinamis
+           ======================================================== */}
+        <div className="glass-left-panel">
+          {/* Top Brand Identity */}
+          <div className="glass-brand-top">
+            <div className="glass-brand-logo">
+              <Building2 size={22} strokeWidth={2.2} />
             </div>
-            <div className="navbar-brand">
-              <div className="navbar-brand-row">
-                <span className="navbar-title">SIPRESMA</span>
-                <span className="navbar-active-badge">
-                  <span className="active-dot" />
-                  Sistem Aktif
-                </span>
-              </div>
-              <span className="navbar-subtitle">Universitas Andalas</span>
+            <div>
+              <div className="glass-brand-title">SIPRESMA</div>
+              <div className="glass-brand-sub">Universitas Andalas</div>
             </div>
           </div>
-          <div className="navbar-right">
-            <a href="#" className="navbar-link">
-              <Key size={14} />
-              Single Sign-On SSO UNAND
-            </a>
-            <a href="#" className="navbar-link">
-              <HelpCircle size={14} />
-              Bantuan Pengguna
-            </a>
+
+          {/* Center Dynamic Role Showcase with Horizontal Slide Motion */}
+          <div
+            key={activeRole}
+            className={`glass-role-showcase ${
+              slideDirection === 'left' ? 'slide-in-right' : 'slide-in-left'
+            }`}
+          >
+            <div className="glass-icon-wrapper">
+              <RoleIcon size={38} className="text-emerald-400" strokeWidth={1.8} />
+            </div>
+            <div className="glass-role-badge-pill">
+              <Sparkles size={12} />
+              <span>{currentRole.portalBadge}</span>
+            </div>
+            <h2 className="glass-role-title">{currentRole.roleTitle}</h2>
+            <p className="glass-role-desc">{currentRole.description}</p>
+          </div>
+
+          {/* Bottom Pagination Dots */}
+          <div className="glass-pagination-dots">
+            {ROLES.map((role) => (
+              <button
+                key={role.id}
+                type="button"
+                onClick={() => handleRoleSelect(role.id)}
+                className={`pagination-dot ${role.id === activeRole ? 'active' : 'inactive'}`}
+                title={`Pilih peran ${role.tabLabel}`}
+                aria-label={`Slide ke ${role.tabLabel}`}
+              />
+            ))}
           </div>
         </div>
-      </nav>
 
-      {/* ===== MAIN CONTENT ===== */}
-      <main className="login-main">
-        <div className="login-container">
-          {/* LEFT PANEL - Feature Branding */}
-          <div className="login-left-panel">
-            <div className="left-panel-inner">
-              {/* Top badge */}
-              <div className="left-badge">
-                <Shield size={14} />
-                UPT Asrama Mahasiswa UNAND
-              </div>
-
-              {/* Title */}
-              <h1 className="left-title">
-                Sistem Presensi Asrama Terpadu &amp; Terintegrasi
-              </h1>
-
-              {/* Description */}
-              <p className="left-description">
-                Portal pencatatan presensi digital harian civitas asrama
-                Universitas Andalas untuk mewujudkan ketertiban, keamanan, dan
-                kedisiplinan asrama.
+        {/* ========================================================
+            PANEL KANAN (55% lebar) — Form Login Glassy & Interaktif
+           ======================================================== */}
+        <div className="glass-right-panel">
+          {/* Header & Help Popover */}
+          <div className="glass-form-header">
+            <div>
+              <h1 className="glass-form-title">Selamat Datang</h1>
+              <p className="glass-form-subtitle">
+                Masuk dengan akun terdaftar untuk mengakses presensi
               </p>
-
-              {/* Feature Cards Grid */}
-              <div className="feature-grid">
-                <div className="feature-card">
-                  <div className="feature-icon">
-                    <MapPin size={18} />
-                  </div>
-                  <div>
-                    <div className="feature-card-title">Geofencing Asrama</div>
-                    <div className="feature-card-desc">
-                      Radius terukur presensi Gedung A, B, C, &amp; D.
-                    </div>
-                  </div>
-                </div>
-
-                <div className="feature-card">
-                  <div className="feature-icon">
-                    <QrCode size={18} />
-                  </div>
-                  <div>
-                    <div className="feature-card-title">QR Code Presensi</div>
-                    <div className="feature-card-desc">
-                      Validasi cepat Subuh dan Malam secara instan.
-                    </div>
-                  </div>
-                </div>
-
-                <div className="feature-card">
-                  <div className="feature-icon">
-                    <Key size={18} />
-                  </div>
-                  <div>
-                    <div className="feature-card-title">
-                      Terintegrasi SSO UNAND
-                    </div>
-                    <div className="feature-card-desc">
-                      Masuk aman menggunakan email resmi kampus.
-                    </div>
-                  </div>
-                </div>
-
-                <div className="feature-card">
-                  <div className="feature-icon">
-                    <Activity size={18} />
-                  </div>
-                  <div>
-                    <div className="feature-card-title">
-                      Monitoring Real-time
-                    </div>
-                    <div className="feature-card-desc">
-                      Audit langsung bagi Fasilitator dan Admin.
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Bottom Info */}
-              <div className="left-bottom">
-                <div className="left-bottom-left">
-                  <div className="gedung-badges">
-                    <span className="gedung-badge ga" title="Gedung A (RPX) - Putri">GA</span>
-                    <span className="gedung-badge gb" title="Gedung B (Rusunawa) - Putri">GB</span>
-                    <span className="gedung-badge gc" title="Gedung C (PUPERA C) - Putri">GC</span>
-                    <span className="gedung-badge gd" title="Gedung D (Menpera) - Putri">GD</span>
-                    <span className="gedung-badge ge" title="Gedung E (Roesma M. Sjaaf) - Putri">GE</span>
-                    <span className="gedung-badge gf" title="Gedung F (Orange) - Putra">GF</span>
-                    <span className="gedung-badge gg" title="Gedung G (Hijau) - Putra">GG</span>
-                    <span className="gedung-badge gh" title="Gedung H (PUPERA H) - Putra">GH</span>
-                  </div>
-                  <div className="gedung-info">
-                    <span className="gedung-info-title">
-                      8 Kompleks Asrama (A–H)
-                    </span>
-                    <span className="gedung-info-sub">
-                      5 Asrama Putri (A–E) &bull; 3 Asrama Putra (F–H)
-                    </span>
-                  </div>
-                </div>
-                <div className="left-bottom-right">
-                  <Shield size={14} />
-                  Server Terenkripsi SSL/TLS
-                </div>
-              </div>
             </div>
-          </div>
 
-          {/* RIGHT PANEL - Login Form */}
-          <div className="login-right-panel">
-            <div className="right-panel-inner">
-              {/* Top header row */}
-              <div className="form-header-row">
-                <div className="portal-badge">
-                  <Lock size={12} />
-                  Portal Resmi Presensi
-                </div>
-                <span className="ta-badge">T.A. 2025/2026</span>
-              </div>
+            {/* Help Button with Popover */}
+            <div className="help-btn-wrapper">
+              <button
+                type="button"
+                onClick={() => setShowHelpPopover(!showHelpPopover)}
+                className={`btn-help-trigger ${showHelpPopover ? 'active' : ''}`}
+                title="Bantuan pengguna baru"
+              >
+                <HelpCircle size={18} />
+              </button>
 
-              {/* Title */}
-              <h2 className="form-title">Selamat Datang Kembali</h2>
-              <p className="form-subtitle">
-                Masuk dengan akun civitas akademika Universitas Andalas untuk
-                mengakses portal presensi.
-              </p>
-
-              {/* Role Tabs */}
-              <div className="role-tabs">
-                <div className="role-tabs-icon">
-                  <Users size={16} />
-                </div>
-                <span className="role-tabs-label">
-                  Pintu Masuk
-                  <br />
-                  Terpadu:
-                </span>
-                <div className="role-tabs-buttons">
-                  <button
-                    type="button"
-                    className={`role-tab ${activeRole === 'PENGHUNI' ? 'active' : ''}`}
-                    onClick={() => handleRoleSelect('PENGHUNI')}
-                  >
-                    Penghuni
-                  </button>
-                  <span className="role-tab-dot">•</span>
-                  <button
-                    type="button"
-                    className={`role-tab ${activeRole === 'FASIL' ? 'active' : ''}`}
-                    onClick={() => handleRoleSelect('FASIL')}
-                  >
-                    Fasilitator
-                  </button>
-                  <span className="role-tab-dot">•</span>
-                  <button
-                    type="button"
-                    className={`role-tab ${activeRole === 'ADMIN' ? 'active' : ''}`}
-                    onClick={() => handleRoleSelect('ADMIN')}
-                  >
-                    Admin
-                  </button>
-                </div>
-              </div>
-
-              {/* Error message */}
-              {error && (
-                <div className="login-error animate-fade-in">
-                  <AlertCircle size={14} />
-                  <span>
-                    {typeof error === 'string'
-                      ? error
-                      : (error as any)?.message || JSON.stringify(error)}
-                  </span>
-                </div>
-              )}
-
-              {/* Login Form */}
-              <form onSubmit={handleSubmit} className="login-form">
-                {/* Email field */}
-                <div className="form-group">
-                  <label htmlFor="login-email" className="form-label">
-                    Email <span className="required">*</span>
-                  </label>
-                  <div className="input-wrapper">
-                    <Mail size={16} className="input-icon" />
-                    <input
-                      id="login-email"
-                      type="text"
-                      value={identifier}
-                      onChange={(e) => setIdentifier(e.target.value)}
-                      placeholder="2311522040@student.unand.ac.id"
-                      className="form-input"
-                      disabled={isLoading}
-                      autoComplete="username"
-                    />
-                  </div>
-                </div>
-
-                {/* Password field */}
-                <div className="form-group">
-                  <div className="form-label-row">
-                    <label htmlFor="login-password" className="form-label">
-                      Kata Sandi <span className="required">*</span>
-                    </label>
-                    <a href="#" className="forgot-link">
-                      Lupa kata sandi?
-                    </a>
-                  </div>
-                  <div className="input-wrapper">
-                    <Lock size={16} className="input-icon" />
-                    <input
-                      id="login-password"
-                      type={showPassword ? 'text' : 'password'}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••••••"
-                      className="form-input has-toggle"
-                      disabled={isLoading}
-                      autoComplete="current-password"
-                    />
+              {showHelpPopover && (
+                <div className="glass-popover-card">
+                  <div className="popover-header">
+                    <span className="popover-title-text">
+                      <Sparkles size={13} />
+                      Info Mahasiswa Baru
+                    </span>
                     <button
                       type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="password-toggle"
-                      tabIndex={-1}
+                      onClick={() => setShowHelpPopover(false)}
+                      className="popover-close-btn"
                     >
-                      {showPassword ? (
-                        <EyeOff size={16} />
-                      ) : (
-                        <Eye size={16} />
-                      )}
+                      <X size={14} />
                     </button>
                   </div>
+                  <p className="popover-body-text">
+                    Penghuni baru <strong>tidak perlu mendaftar mandiri</strong>. Akun
+                    diaktifkan otomatis oleh Pengelola Asrama berdasarkan SK penetapan.
+                  </p>
                 </div>
-
-                {/* Remember me */}
-                <div className="remember-row">
-                  <button
-                    type="button"
-                    className="remember-checkbox"
-                    onClick={() => setRememberMe(!rememberMe)}
-                  >
-                    {rememberMe ? (
-                      <CheckSquare size={18} className="check-active" />
-                    ) : (
-                      <Square size={18} className="check-inactive" />
-                    )}
-                    <span>Ingat sesi di perangkat ini</span>
-                  </button>
-                </div>
-
-                {/* Submit button */}
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="login-submit-btn"
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 size={18} className="animate-spin" />
-                      <span>Memproses...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>Masuk ke Sistem</span>
-                      <ArrowRight size={18} />
-                    </>
-                  )}
-                </button>
-              </form>
-
-              {/* Info notice */}
-              <div className="login-notice">
-                <AlertCircle size={16} className="notice-icon" />
-                <p>
-                  <strong>Tidak memiliki akun terdaftar?</strong> Penghuni baru
-                  tidak perlu mendaftar mandiri. Akun diaktifkan otomatis oleh
-                  Pengelola Asrama berdasarkan penetapan SK Asrama.
-                </p>
-              </div>
-
-              {/* Bottom links */}
-              <div className="form-bottom-row">
-                <span className="form-bottom-text">
-                  Kendala login akun SSO?
-                </span>
-                <a href="#" className="form-bottom-link">
-                  Hubungi Pengelola Asrama
-                  <ExternalLink size={12} />
-                </a>
-              </div>
+              )}
             </div>
           </div>
-        </div>
-      </main>
 
-      {/* ===== FOOTER ===== */}
-      <footer className="login-footer">
-        <div className="login-footer-inner">
-          <div className="footer-left">
-            <p className="footer-copyright">
-              &copy; 2026 SIPRESMA · UPT Asrama Mahasiswa Universitas Andalas
-            </p>
-            <p className="footer-address">
-              Kampus Limau Manis, Kec. Pauh, Kota Padang, Sumatera Barat 25163
-            </p>
+          {/* Sliding Role Switcher */}
+          <div className="sliding-role-container">
+            <div
+              className="sliding-pill-indicator"
+              style={{
+                transform: `translateX(${roleIndex * 100}%)`,
+              }}
+            />
+            {ROLES.map((r) => (
+              <button
+                key={r.id}
+                type="button"
+                onClick={() => handleRoleSelect(r.id)}
+                className={`sliding-role-tab ${activeRole === r.id ? 'active' : ''}`}
+              >
+                {r.tabLabel}
+              </button>
+            ))}
           </div>
-          <div className="footer-right">
-            <a href="#" className="footer-link">
-              Panduan Presensi
-            </a>
-            <span className="footer-dot">•</span>
-            <a href="#" className="footer-link">
-              Tata Tertib Asrama
-            </a>
-            <span className="footer-dot">•</span>
-            <a href="#" className="footer-link footer-status">
-              <span className="status-dot-green" />
-              Status Server
-            </a>
+
+          {/* Error Message */}
+          {error && (
+            <div className="glass-error-banner">
+              <AlertCircle size={16} className="shrink-0" />
+              <span>{typeof error === 'string' ? error : (error as any)?.message || JSON.stringify(error)}</span>
+            </div>
+          )}
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="glass-form-body">
+            {/* Email Field */}
+            <div className="glass-input-group">
+              <label htmlFor="login-email" className="glass-field-label">
+                Alamat Email / Akun
+              </label>
+              <div className="glass-input-wrapper">
+                <Mail size={16} className="glass-input-icon" />
+                <input
+                  id="login-email"
+                  type="text"
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
+                  placeholder={currentRole.emailPlaceholder}
+                  className="glass-text-input"
+                  disabled={isLoading}
+                  autoComplete="username"
+                />
+              </div>
+            </div>
+
+            {/* Password Field */}
+            <div className="glass-input-group">
+              <div className="glass-label-row">
+                <label htmlFor="login-password" className="glass-field-label">
+                  Kata Sandi
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setShowForgotModal(true)}
+                  className="btn-forgot-password"
+                >
+                  Lupa kata sandi?
+                </button>
+              </div>
+              <div className="glass-input-wrapper">
+                <Lock size={16} className="glass-input-icon" />
+                <input
+                  id="login-password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••••••"
+                  className="glass-text-input"
+                  style={{ paddingRight: '44px' }}
+                  disabled={isLoading}
+                  autoComplete="current-password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="btn-pwd-eye"
+                  tabIndex={-1}
+                  title={showPassword ? 'Sembunyikan sandi' : 'Tampilkan sandi'}
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+            </div>
+
+            {/* Remember Me & Demo Fill */}
+            <div className="glass-actions-row">
+              <button
+                type="button"
+                className="remember-session-btn"
+                onClick={() => setRememberMe(!rememberMe)}
+              >
+                {rememberMe ? (
+                  <CheckSquare size={17} className="text-emerald-700" />
+                ) : (
+                  <Square size={17} className="text-slate-400" />
+                )}
+                <span>Ingat sesi</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleFillDemo}
+                className="btn-fill-demo"
+                title="Isi kredensial akun demo untuk peran ini"
+              >
+                <Sparkles size={13} />
+                <span>Isi Akun Demo</span>
+              </button>
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="glass-submit-btn"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 size={18} className="animate-spin" />
+                  <span>Memproses masuk...</span>
+                </>
+              ) : (
+                <>
+                  <span>{currentRole.submitLabel}</span>
+                  <ArrowRight size={18} />
+                </>
+              )}
+            </button>
+          </form>
+
+          <p className="glass-form-footer">
+            Sistem Informasi Presensi Asrama &bull; UPT Asrama UNAND
+          </p>
+        </div>
+      </div>
+
+      {/* ========================================================
+          MODAL: Lupa Kata Sandi (Glassy Pop-up)
+         ======================================================== */}
+      {showForgotModal && (
+        <div className="glass-modal-overlay" onClick={() => setShowForgotModal(false)}>
+          <div className="glass-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="glass-modal-header">
+              <div className="glass-modal-title">
+                <Shield size={18} className="text-emerald-700" />
+                Reset Kata Sandi Akun
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowForgotModal(false)}
+                className="popover-close-btn"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <p className="glass-modal-body-text">
+              Untuk menjaga integritas dan keamanan data asrama, pemulihan akun dilakukan
+              melalui verifikasi langsung oleh Pengelola UPT Asrama Mahasiswa UNAND.
+              Silakan hubungi loket layanan gedung atau kirimkan email resmi:
+            </p>
+
+            <div className="glass-contact-box">
+              <span className="glass-contact-email">asrama@unand.ac.id</span>
+              <button
+                type="button"
+                onClick={handleCopyEmail}
+                className="btn-fill-demo"
+                style={{ padding: '6px 12px' }}
+              >
+                {copiedEmail ? <Check size={14} className="text-emerald-700" /> : <Copy size={14} />}
+                <span>{copiedEmail ? 'Tersalin' : 'Salin Email'}</span>
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowForgotModal(false)}
+              className="btn-close-modal"
+            >
+              Tutup
+            </button>
           </div>
         </div>
-      </footer>
+      )}
     </div>
   );
 }

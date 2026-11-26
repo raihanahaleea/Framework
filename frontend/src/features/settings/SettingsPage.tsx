@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Settings, Clock, Save, ShieldCheck, Loader2 } from 'lucide-react';
+import { Clock, Save, ShieldCheck, Loader2 } from 'lucide-react';
 import api from '../../lib/api';
 import { toast } from 'sonner';
 import type { AttendanceSetting } from '../../types';
+import './SettingsPage.css';
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<AttendanceSetting[]>([]);
@@ -71,32 +72,41 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="max-w-3xl space-y-5 animate-fade-in">
-      <div className="pb-2 border-b border-slate-200">
-        <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-          <Settings size={20} className="text-emerald-800" />
-          Konfigurasi Sistem & Geofence
-        </h1>
-        <p className="text-xs text-slate-500 mt-0.5">
-          Atur jendela waktu presensi, batas toleransi sinyal lokasi, dan proteksi integritas data
-        </p>
+    <div className="settings-page animate-fade-in">
+      {/* ===== Header Banner ===== */}
+      <div className="settings-banner">
+        <div className="settings-banner-left">
+          <div className="settings-badge">
+            <ShieldCheck size={14} />
+            Panel Administrator • Konfigurasi Sistem
+          </div>
+          <h1 className="settings-title">Konfigurasi Sistem &amp; Geofence</h1>
+          <p className="settings-subtitle">
+            Atur jendela waktu presensi, batas toleransi sinyal lokasi geofence GPS, dan proteksi integritas anti-spoofing.
+          </p>
+        </div>
       </div>
 
-      <form onSubmit={handleSave} className="space-y-4 text-xs">
+      <form onSubmit={handleSave} className="settings-form">
         {/* Jadwal Presensi */}
-        <div className="bg-white rounded-xl border border-slate-200/90 shadow-2xs p-5 space-y-4">
-          <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-            <Clock size={16} className="text-emerald-800" />
-            Jadwal Sesi Presensi Kehadiran
-          </h2>
+        <div className="settings-card">
+          <div className="settings-card-header">
+            <div className="settings-card-icon">
+              <Clock size={18} />
+            </div>
+            <div>
+              <h2 className="settings-card-title">Jadwal Sesi Presensi Kehadiran</h2>
+              <p className="settings-card-desc">Atur rentang jam aktif untuk sesi presensi Subuh dan Malam warga asrama</p>
+            </div>
+          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="sesi-cards-grid">
             {/* Sesi Subuh */}
-            <div className="p-3.5 rounded-lg border border-slate-200 bg-slate-50/50 space-y-3">
-              <div className="flex items-center justify-between">
+            <div className="sesi-subcard">
+              <div className="sesi-subcard-top">
                 <div>
-                  <h3 className="font-bold text-slate-900 text-xs">Sesi Subuh (Pagi)</h3>
-                  <p className="text-[11px] text-slate-400">Jadwal presensi sholat subuh bersama</p>
+                  <h3 className="sesi-subcard-title">Sesi Subuh (Pagi)</h3>
+                  <p className="sesi-subcard-desc">Presensi sholat subuh berjamaah</p>
                 </div>
                 <input
                   type="checkbox"
@@ -106,34 +116,34 @@ export default function SettingsPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-2.5">
+              <div className="sesi-time-grid">
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-600 mb-1">Jam Mulai</label>
+                  <label className="sesi-time-label">Jam Mulai</label>
                   <input
                     type="time"
                     value={subuhTime.start}
                     onChange={(e) => setSubuhTime({ ...subuhTime, start: e.target.value })}
-                    className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded text-xs font-mono"
+                    className="sesi-time-input"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-600 mb-1">Jam Selesai</label>
+                  <label className="sesi-time-label">Jam Selesai</label>
                   <input
                     type="time"
                     value={subuhTime.end}
                     onChange={(e) => setSubuhTime({ ...subuhTime, end: e.target.value })}
-                    className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded text-xs font-mono"
+                    className="sesi-time-input"
                   />
                 </div>
               </div>
             </div>
 
             {/* Sesi Malam */}
-            <div className="p-3.5 rounded-lg border border-slate-200 bg-slate-50/50 space-y-3">
-              <div className="flex items-center justify-between">
+            <div className="sesi-subcard">
+              <div className="sesi-subcard-top">
                 <div>
-                  <h3 className="font-bold text-slate-900 text-xs">Sesi Malam (Apel)</h3>
-                  <p className="text-[11px] text-slate-400">Jadwal presensi apel malam asrama</p>
+                  <h3 className="sesi-subcard-title">Sesi Malam (Apel)</h3>
+                  <p className="sesi-subcard-desc">Presensi apel malam &amp; jam malam asrama</p>
                 </div>
                 <input
                   type="checkbox"
@@ -143,23 +153,23 @@ export default function SettingsPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-2.5">
+              <div className="sesi-time-grid">
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-600 mb-1">Jam Mulai</label>
+                  <label className="sesi-time-label">Jam Mulai</label>
                   <input
                     type="time"
                     value={malamTime.start}
                     onChange={(e) => setMalamTime({ ...malamTime, start: e.target.value })}
-                    className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded text-xs font-mono"
+                    className="sesi-time-input"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-600 mb-1">Jam Selesai</label>
+                  <label className="sesi-time-label">Jam Selesai</label>
                   <input
                     type="time"
                     value={malamTime.end}
                     onChange={(e) => setMalamTime({ ...malamTime, end: e.target.value })}
-                    className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded text-xs font-mono"
+                    className="sesi-time-input"
                   />
                 </div>
               </div>
@@ -168,19 +178,24 @@ export default function SettingsPage() {
         </div>
 
         {/* Keamanan GPS & Geofencing */}
-        <div className="bg-white rounded-xl border border-slate-200/90 shadow-2xs p-5 space-y-4">
-          <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-            <ShieldCheck size={16} className="text-emerald-800" />
-            Validasi Lokasi & Geofence
-          </h2>
-
-          <div className="space-y-3">
+        <div className="settings-card">
+          <div className="settings-card-header">
+            <div className="settings-card-icon">
+              <ShieldCheck size={18} />
+            </div>
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-semibold text-slate-700">
-                  Default Radius Geofence Gedung (Meter)
+              <h2 className="settings-card-title">Validasi Lokasi &amp; Geofence GPS</h2>
+              <p className="settings-card-desc">Batas radius jangkauan presensi dan toleransi presisi koordinat perangkat</p>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-5">
+            <div className="slider-group">
+              <div className="slider-top-row">
+                <label className="slider-label">
+                  Default Radius Geofence Gedung
                 </label>
-                <span className="text-xs font-bold text-emerald-800">{defaultRadius} meter</span>
+                <span className="slider-badge-val">{defaultRadius} meter</span>
               </div>
               <input
                 type="range"
@@ -189,16 +204,19 @@ export default function SettingsPage() {
                 step="10"
                 value={defaultRadius}
                 onChange={(e) => setDefaultRadius(parseInt(e.target.value))}
-                className="w-full accent-emerald-700"
+                className="slider-range-input"
               />
+              <p className="slider-help-note">
+                Jarak radius maksimum dari titik koordinat pusat gedung asrama yang diizinkan untuk check-in.
+              </p>
             </div>
 
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-semibold text-slate-700">
+            <div className="slider-group">
+              <div className="slider-top-row">
+                <label className="slider-label">
                   Maksimum Toleransi Akurasi GPS
                 </label>
-                <span className="text-xs font-bold text-emerald-800">&plusmn;{gpsAccuracy} meter</span>
+                <span className="slider-badge-val">&plusmn;{gpsAccuracy} meter</span>
               </div>
               <input
                 type="range"
@@ -207,25 +225,25 @@ export default function SettingsPage() {
                 step="5"
                 value={gpsAccuracy}
                 onChange={(e) => setGpsAccuracy(parseInt(e.target.value))}
-                className="w-full accent-emerald-700"
+                className="slider-range-input"
               />
-              <p className="text-[10px] text-slate-400 mt-0.5">
-                Presensi akan ditolak otomatis apabila sinyal GPS perangkat penghuni dinilai tidak cukup akurat.
+              <p className="slider-help-note">
+                Presensi akan ditolak otomatis apabila sinyal akurasi GPS perangkat penghuni bernilai lebih besar dari batas toleransi ini.
               </p>
             </div>
 
-            <div className="pt-1">
-              <label className="flex items-center gap-2.5 p-2.5 rounded-lg bg-slate-50 border border-slate-200 cursor-pointer">
+            <div className="pt-2">
+              <label className="anti-fake-gps-box">
                 <input
                   type="checkbox"
                   checked={antiFakeGps}
                   onChange={(e) => setAntiFakeGps(e.target.checked)}
-                  className="rounded text-emerald-800 focus:ring-emerald-700 h-4 w-4"
+                  className="rounded text-emerald-800 focus:ring-emerald-700 h-4 w-4 mt-0.5"
                 />
                 <div>
-                  <p className="text-xs font-semibold text-slate-800">Deteksi Manipulasi Fake GPS / Mock Location</p>
-                  <p className="text-[10px] text-slate-400">
-                    Otomatis blokir percobaan manipulasi koordinat lokasi dari perangkat penghuni.
+                  <h4 className="anti-fake-title">Deteksi Manipulasi Fake GPS / Mock Location</h4>
+                  <p className="anti-fake-desc">
+                    Otomatis blokir percobaan manipulasi koordinat lokasi dan rekayasa sinyal GPS dari perangkat penghuni demi integritas data.
                   </p>
                 </div>
               </label>
@@ -233,14 +251,16 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        <button
-          type="submit"
-          disabled={saving}
-          className="flex items-center gap-2 px-5 py-2.5 bg-emerald-800 hover:bg-emerald-700 text-white font-semibold rounded-lg shadow-xs hover:shadow transition-all disabled:opacity-50 text-xs"
-        >
-          {saving ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
-          <span>Simpan Konfigurasi</span>
-        </button>
+        <div className="settings-submit-row">
+          <button
+            type="submit"
+            disabled={saving}
+            className="btn-save-settings"
+          >
+            {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+            <span>Simpan Konfigurasi</span>
+          </button>
+        </div>
       </form>
     </div>
   );

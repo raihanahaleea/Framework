@@ -1,14 +1,532 @@
-/* Styles for FasilDashboard component */
+/* ========================================================
+   FASILITATOR DASHBOARD STYLES
+   SIPRESMA - UPT Asrama Mahasiswa Universitas Andalas
+   ======================================================== */
 
-.fasil-dashboard {
-  padding: 1rem;
-  background-color: #f9fafb;
-}
-
-.fasil-dashboard .chart-container {
+.fasil-dash {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  max-width: 1240px;
+  margin: 0 auto;
   width: 100%;
-  height: 400px;
 }
 
-/* Add any additional styles you need */
+/* ===== Header Welcome Banner ===== */
+.fasil-banner {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 24px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+  position: relative;
+  overflow: hidden;
+}
 
+.fasil-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 5px;
+  height: 100%;
+  background: linear-gradient(180deg, #065f46 0%, #047857 50%, #10b981 100%);
+  border-radius: 16px 0 0 16px;
+}
+
+.fasil-banner-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.fasil-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #047857;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: #ecfdf5;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  margin-bottom: 8px;
+}
+
+.fasil-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.fasil-subtitle {
+  font-size: 13px;
+  color: #64748b;
+  margin: 6px 0 0 0;
+  line-height: 1.5;
+}
+
+.fasil-banner-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.fasil-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #15803d;
+  box-shadow: 0 1px 2px rgba(21, 128, 61, 0.05);
+}
+
+.fasil-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.25);
+  animation: fasilPulseDot 2s infinite;
+}
+
+@keyframes fasilPulseDot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.8; }
+}
+
+.fasil-period-note {
+  font-size: 11.5px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* ===== Quick Action Shortcuts ===== */
+.fasil-shortcuts-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.fasil-shortcut-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.fasil-shortcut-btn:hover {
+  border-color: #047857;
+  color: #047857;
+  background: #f0fdf4;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(4, 120, 87, 0.08);
+}
+
+.fasil-shortcut-badge {
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 999px;
+  margin-left: 2px;
+}
+
+/* ===== 4 Metrik Stat Cards ===== */
+.fasil-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.fasil-stat-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.fasil-stat-card:hover {
+  transform: translateY(-2px);
+  border-color: #cbd5e1;
+  box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.06);
+}
+
+.fasil-stat-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.fasil-stat-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.fasil-stat-icon-wrapper {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.fasil-stat-card:hover .fasil-stat-icon-wrapper {
+  transform: scale(1.08);
+}
+
+.icon-fasil-binaan {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.icon-fasil-hadir {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.icon-fasil-izin {
+  background: #fffbeb;
+  color: #b45309;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.icon-fasil-menunggu {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.fasil-stat-val {
+  font-size: 26px;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-feature-settings: "tnum";
+}
+
+.fasil-stat-note {
+  font-size: 11.5px;
+  color: #94a3b8;
+  margin-top: 6px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ===== 2 Column Grid (Chart + Today & Alert) ===== */
+.fasil-grid-2col {
+  display: grid;
+  grid-template-columns: 1.8fr 1.2fr;
+  gap: 18px;
+  align-items: stretch;
+}
+
+.fasil-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+}
+
+.fasil-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.fasil-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.fasil-card-subtitle {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 3px;
+}
+
+.fasil-chart-period {
+  font-size: 11px;
+  font-weight: 700;
+  color: #047857;
+  background: #ecfdf5;
+  padding: 3px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.fasil-chart-box {
+  flex: 1;
+  min-height: 250px;
+  width: 100%;
+}
+
+/* Right Quick Panel */
+.fasil-quick-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.fasil-alert-card {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border: 1px solid #fde68a;
+  border-radius: 14px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.08);
+}
+
+.fasil-alert-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #92400e;
+  margin: 0;
+}
+
+.fasil-alert-text {
+  font-size: 12px;
+  color: #b45309;
+  margin: 3px 0 10px 0;
+  line-height: 1.4;
+}
+
+.fasil-alert-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #92400e;
+  background: #ffffff;
+  border: 1px solid #fde68a;
+  padding: 5px 12px;
+  border-radius: 7px;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.fasil-alert-link:hover {
+  background: #b45309;
+  color: #ffffff;
+  border-color: #b45309;
+}
+
+.fasil-today-items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fasil-today-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 10px;
+}
+
+.fasil-today-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #334155;
+}
+
+/* ===== Recent Attendance Table Card ===== */
+.fasil-table-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.fasil-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.fasil-table thead {
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.fasil-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.fasil-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+  vertical-align: middle;
+}
+
+.fasil-table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.fasil-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.fasil-user-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fasil-user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.fasil-see-all-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #047857;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.fasil-see-all-link:hover {
+  color: #065f46;
+}
+
+/* Empty State */
+.fasil-empty-state {
+  text-align: center;
+  padding: 36px 16px;
+  color: #94a3b8;
+}
+
+.fasil-empty-icon {
+  margin: 0 auto 10px auto;
+  opacity: 0.35;
+  color: #047857;
+}
+
+.fasil-empty-text {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* ===== Responsive Breakpoints ===== */
+@media (max-width: 1080px) {
+  .fasil-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .fasil-grid-2col {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .fasil-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .fasil-banner-right {
+    align-items: flex-start;
+    width: 100%;
+  }
+  .fasil-shortcuts-bar {
+    width: 100%;
+  }
+  .fasil-shortcut-btn {
+    flex: 1 1 calc(50% - 10px);
+    justify-content: center;
+  }
+}
+
+@media (max-width: 540px) {
+  .fasil-stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .fasil-shortcut-btn {
+    flex: 1 1 100%;
+  }
+}

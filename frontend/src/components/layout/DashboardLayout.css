@@ -150,7 +150,7 @@
   font-weight: 800;
   font-size: 13px;
   color: #fff;
-  letter-spacing: -0.02em;
+  letter-spacing: 0.01em;
   line-height: 1.2;
 }
 
@@ -419,7 +419,7 @@
   font-size: 18px;
   font-weight: 800;
   color: #111827;
-  letter-spacing: -0.02em;
+  letter-spacing: 0.005em;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -514,7 +514,7 @@
   font-size: 20px;
   font-weight: 800;
   color: #111827;
-  letter-spacing: -0.02em;
+  letter-spacing: 0.01em;
 }
 
 .stat-card-sub {
@@ -841,3 +841,35 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ===== Global Polish for Admin & Shared Feature Pages ===== */
+.dashboard-main table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.dashboard-main table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.dashboard-main input[type="text"]:focus,
+.dashboard-main input[type="email"]:focus,
+.dashboard-main input[type="password"]:focus,
+.dashboard-main select:focus,
+.dashboard-main textarea:focus {
+  border-color: #047857 !important;
+  box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.12) !important;
+}
+
+/* Modal Backdrop Polish */
+div[class*="fixed inset-0"][class*="bg-slate-900"],
+div[class*="fixed inset-0"][class*="bg-black"] {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Card Elevation on Hover */
+.dashboard-main div[class*="bg-white rounded-xl border"] {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
